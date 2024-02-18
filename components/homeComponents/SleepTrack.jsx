@@ -1,63 +1,108 @@
-import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import React, { useEffect } from 'react';
+import {Button, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import React, {useContext, useEffect} from 'react';
 import Slider from '@react-native-community/slider';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { useState } from 'react';
+import {useState} from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/Feather';
+import {AuthContext} from '../../context/authContext';
 
 const SleepTrack = () => {
+  //global
+  const [state] = useContext(AuthContext);
+  const {token} = state;
+
   const [date1, setDate1] = useState(new Date());
+  const [date2, setDate2] = useState(new Date());
   const [showTimeText1, setShowTimeText1] = useState(false);
   const [showTimeText2, setShowTimeText2] = useState(false);
   const [show1, setShow1] = useState(false);
   const [mode1, setMode1] = useState('date');
   const [mode2, setMode2] = useState('date');
-  const [date2, setDate2] = useState(new Date());
   const [date21, setDate21] = useState(null);
   const [show2, setShow2] = useState(false);
-  const [difference, setDifference] = useState({ hours: 0, minutes: 0 });
+  const [difference, setDifference] = useState({hours: 0, minutes: 0});
   const [arrowPosition, setArrowPosition] = useState(0);
   const [score, setScore] = useState(0);
-  const [changeTouchable, setChangeTouchable] = useState(true)
+  const [changeTouchable, setChangeTouchable] = useState(true);
+  //difference in mil sec
+  const [difMilliseconds, setdifMilliseconds] = useState();
 
   useEffect(() => {
     const calculateDifference = () => {
-      // If wake-up time is earlier than bed time, add a day to wake-up time
-      const wakeUpAdjusted =
-        date2 < date1 ? new Date(date2.getTime() + 24 * 60 * 60 * 1000) : date2;
-      const diffInMilliseconds = wakeUpAdjusted.getTime() - date1.getTime();
+      const diffInMilliseconds = Math.abs(date2.getTime() - date1.getTime());
+      setdifMilliseconds(diffInMilliseconds);
       const hours = Math.floor(diffInMilliseconds / (1000 * 60 * 60));
       const minutes = Math.floor(
-        (diffInMilliseconds % (1000 * 60 * 60)) / (1000 * 60)
+        (diffInMilliseconds % (1000 * 60 * 60)) / (1000 * 60),
       );
-      setDifference({ hours, minutes });
+      setDifference({hours, minutes});
 
-      // Calculate sleep quality based on difference
+      // Calculate sleep quality and score
       const totalMinutes = hours * 60 + minutes;
       const sleepQuality = Math.max(0, Math.min(1, (totalMinutes - 5) / 3)); // Normalize the value between 0 and 1
-      const colorValue = Math.round(255 * (1 - sleepQuality)); // Interpolate between red (255,0,0) and green (0,255,0)
-
-      // Calculate score
-      let sleepScore = 0;
-      if (totalMinutes >= 5 * 60) {
-        sleepScore = totalMinutes >= 8 * 60 ? 10 : (totalMinutes - 5 * 60) / (3 * 60) * 10;
-      }
+      const sleepScore =
+        totalMinutes >= 5 * 60
+          ? totalMinutes >= 8 * 60
+            ? 10
+            : ((totalMinutes - 5 * 60) / (3 * 60)) * 10
+          : 0; // Calculate score
       setScore(sleepScore);
-       // Calculate arrow position based on the score
-       const normalizedScore = sleepScore / 10; // Normalize score to range [0, 1]
-       const position = normalizedScore * 100; // Convert to percentage
-       setArrowPosition(Math.min(position, 94)); // Ensure position does not exceed 100%
+
+      // Calculate arrow position based on the score
+      const normalizedScore = sleepScore / 10; // Normalize score to range [0, 1]
+      const position = normalizedScore * 100; // Convert to percentage
+      setArrowPosition(Math.min(position, 94)); // Ensure position does not exceed 100%
     };
 
     calculateDifference();
   }, [date2]);
 
+  console.log(`date1: ${date1}`);
+  console.log(`date2: ${date2}`);
+
+  const sendData = () => {
+    if (date1 && date2) {
+      console.log(`bed Time: ${date1}`);
+      console.log(`wake Time: ${date2}`);
+      console.log(`diffrence: ${difMilliseconds}`);
+      console.log(`diffrence in hour: ${difference.hours}`);
+      let data = {
+        bedTime: date1,
+        wakeTime: date2,
+        differenceInMill: difMilliseconds,
+      };
+      fetch('http://192.168.190.191:5000/api/v1/sleep/send', {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(data),
+      })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
+        .then(result => {
+          // Handle success
+          Alert.alert('Updated');
+        })
+        .catch(error => {
+          // Handle error
+          // console.error('There was a problem with the fetch operation:', error);
+        });
+    }
+  };
+
   const onChange1 = (e, selectedDate) => {
     setDate1(selectedDate);
     setShow1(false);
     setShowTimeText1(true);
-    setChangeTouchable(false)
+    setChangeTouchable(false);
   };
   const onChange2 = (e, selectedDate) => {
     setDate2(selectedDate);
@@ -76,44 +121,51 @@ const SleepTrack = () => {
   const hideTimeText = () => {
     setShowTimeText1(false);
     setShowTimeText2(false);
+    setChangeTouchable(true);
   };
-  console.log(difference.hours)
+  console.log(difference.hours);
 
   return (
-    <View style={{ marginTop: 19 }}>
-      <View style={{ flexDirection: 'row' }}>
+    <View style={{marginTop: 19}}>
+      <View style={{flexDirection: 'row'}}>
         <Text
           style={[
             styles.color_black,
-            { fontSize: 17, fontWeight: 600, width: '50%' },
-          ]}
-        >
+            {fontSize: 17, fontWeight: 600, width: '50%'},
+          ]}>
           Sleep Track
         </Text>
-        <TouchableOpacity style={{ width: '50%' }} onPress={() => hideTimeText()}>
+        <TouchableOpacity style={{width: '50%'}} onPress={() => hideTimeText()}>
           <Text
             style={[
               styles.color_black,
-              { fontSize: 17, width: '100%', textAlign: 'right' },
-            ]}
-          >
+              {fontSize: 17, width: '100%', textAlign: 'right'},
+            ]}>
             Clear
           </Text>
         </TouchableOpacity>
       </View>
       <View style={styles.sleepContainer}>
         <TouchableOpacity
-          style={[styles.sleepBox, { backgroundColor: 'rgba(111,145,103,0.8)' }]}
+          style={[styles.sleepBox, {backgroundColor: 'rgba(111,145,103,0.8)'}]}
           onPress={() => showMode1('time')}>
-          <View style={{ flexDirection: 'column', width: 'auto', justifyContent: 'center', alignItems: 'center' }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <Icon name='moon' size={15} color='white' />
-              <Text style={[styles.color_white, { fontWeight: 600, fontSize: 15 }]}>
-                {' '}Bed Time {'  '}
+          <View
+            style={{
+              flexDirection: 'column',
+              width: 'auto',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}>
+            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+              <Icon name="moon" size={15} color="white" />
+              <Text
+                style={[styles.color_white, {fontWeight: 600, fontSize: 15}]}>
+                {' '}
+                Bed Time {'  '}
               </Text>
             </View>
             {showTimeText1 ? (
-              <Text style={[styles.color_white, { fontSize: 15 }]}>
+              <Text style={[styles.color_white, {fontSize: 15}]}>
                 {' '}
                 {date1.toLocaleTimeString(navigator.language, {
                   hour: '2-digit',
@@ -125,18 +177,26 @@ const SleepTrack = () => {
             )}
           </View>
         </TouchableOpacity>
-        <TouchableOpacity disabled={changeTouchable}
-          style={[styles.sleepBox, { backgroundColor: 'rgba(3,85,83,0.8)' }]}
+        <TouchableOpacity
+          disabled={changeTouchable}
+          style={[styles.sleepBox, {backgroundColor: 'rgba(3,85,83,0.8)'}]}
           onPress={() => showMode2('time')}>
-          <View style={{ flexDirection: 'column', width: 'auto', alignItems: 'center' }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <Icon name='sun' size={15} color='white' />
-              <Text style={[styles.color_white, { fontWeight: 600, fontSize: 15 }]}>
-                {' '}Wake Time
-            </Text>
+          <View
+            style={{
+              flexDirection: 'column',
+              width: 'auto',
+              alignItems: 'center',
+            }}>
+            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+              <Icon name="sun" size={15} color="white" />
+              <Text
+                style={[styles.color_white, {fontWeight: 600, fontSize: 15}]}>
+                {' '}
+                Wake Time
+              </Text>
             </View>
             {showTimeText2 ? (
-              <Text style={[styles.color_white, { fontSize: 15 }]}>
+              <Text style={[styles.color_white, {fontSize: 15}]}>
                 {' '}
                 {date2.toLocaleTimeString(navigator.language, {
                   hour: '2-digit',
@@ -149,42 +209,72 @@ const SleepTrack = () => {
           </View>
         </TouchableOpacity>
       </View>
-      <View style={{width:'100%', alignItems:'center', marginTop:10}}>
-      <LinearGradient
-        colors={['red', 'green']}
-        style={styles.gradientLine}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 0 }}>
-          {showTimeText2?<View style={[styles.arrowContainer, { left: `${arrowPosition}%` }]}>
-          <View style={styles.arrow} />
-        </View>:<></> }
-      </LinearGradient>
+      <View style={{width: '100%', alignItems: 'center', marginTop: 10}}>
+        <LinearGradient
+          colors={['red', 'green']}
+          style={styles.gradientLine}
+          start={{x: 0, y: 0}}
+          end={{x: 1, y: 0}}>
+          {showTimeText2 ? (
+            <View style={[styles.arrowContainer, {left: `${arrowPosition}%`}]}>
+              <View style={styles.arrow} />
+            </View>
+          ) : (
+            <></>
+          )}
+        </LinearGradient>
       </View>
-
 
       <View style={styles.sleepDataBox}>
         {showTimeText2 ? (
           <>
-          <View style={{flexDirection:'row'}}>
-          <Text style={[styles.color_black, styles.sleepData,{fontWeight:600}]}>
-            Sleep Hours: 
-          </Text>
-          <Text style={[styles.color_black, styles.sleepData]}>{" "}{difference.hours} hours {difference.minutes}{' '}minutes</Text>
-          </View>
+            <View style={{flexDirection: 'row'}}>
+              <Text
+                style={[
+                  styles.color_black,
+                  styles.sleepData,
+                  {fontWeight: 600},
+                ]}>
+                Sleep Hours:
+              </Text>
+              <Text style={[styles.color_black, styles.sleepData]}>
+                {' '}
+                {difference.hours} hours {difference.minutes} minutes
+              </Text>
+            </View>
 
-          <View style={{flexDirection:'row'}}>
-          <Text style={[styles.color_black, styles.sleepData,{fontWeight:600}]}>
-            Sleep score: 
-           </Text>
-          <Text style={[styles.color_black, styles.sleepData]}>
-            {'  '}{score.toFixed(2)}
-          </Text>
-          </View>
-          
+            <View style={{flexDirection: 'row'}}>
+              <Text
+                style={[
+                  styles.color_black,
+                  styles.sleepData,
+                  {fontWeight: 600},
+                ]}>
+                Sleep score:
+              </Text>
+              <Text style={[styles.color_black, styles.sleepData]}>
+                {'  '}
+                {score.toFixed(2)}
+              </Text>
+            </View>
           </>
         ) : (
-            <></>
-          )}
+          <></>
+        )}
+        {showTimeText2 ? (
+          <TouchableOpacity onPress={sendData()}>
+            <View
+              style={{alignItems: 'center', margin: 5, alignItems: 'flex-end'}}>
+              <View style={styles.sleepRecordButton}>
+                <Text style={[styles.color_white, {textAlign: 'center'}]}>
+                  Record
+                </Text>
+              </View>
+            </View>
+          </TouchableOpacity>
+        ) : (
+          <></>
+        )}
       </View>
 
       {show1 && (
@@ -195,7 +285,6 @@ const SleepTrack = () => {
           is24Hour={true}
           display="default"
           onChange={onChange1}
-          
         />
       )}
       {show2 && (
@@ -242,24 +331,32 @@ const styles = StyleSheet.create({
   sleepDataBox: {
     width: '100%',
     marginVertical: 5,
-    height: 20,
+    height: 'auto',
     borderRadius: 10,
     // alignItems:'center',
     marginTop: 15,
     // backgroundColor:"pink",
-    marginHorizontal:10
+    marginHorizontal: 10,
   },
   sleepData: {
     fontSize: 15,
     // textAlign: 'center',
     // backgroundColor:'green',
   },
-  sleepQualityLine:{
+  sleepQualityLine: {
     width: '80%',
     marginVertical: 5,
     height: 20,
     borderRadius: 10,
-    marginHorizontal:20
+    marginHorizontal: 20,
+  },
+  sleepRecordButton: {
+    backgroundColor: 'rgba(3,85,83,0.8)',
+    width: 70,
+    padding: 6,
+    borderRadius: 10,
+    marginHorizontal: 5,
+    bottom: 30,
   },
   gradientLine: {
     width: '90%',
@@ -267,7 +364,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     justifyContent: 'center',
     alignItems: 'center',
-    opacity: 0.8
+    opacity: 0.8,
   },
   arrowContainer: {
     position: 'absolute',
@@ -287,6 +384,6 @@ const styles = StyleSheet.create({
     borderRightColor: 'transparent',
     borderBottomColor: 'transparent',
     borderLeftColor: 'transparent',
-    transform: [{ rotate: '180deg' }],
-  }
+    transform: [{rotate: '180deg'}],
+  },
 });

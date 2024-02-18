@@ -1,11 +1,17 @@
 import { StyleSheet, Text, View, Image, Dimensions, TouchableOpacity } from 'react-native';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome5';
+import { TaskContext } from '../../context/taskContext';
+import { AuthContext } from '../../context/authContext';
 
 const { width } = Dimensions.get('screen');
 
 const UpcomingTasks = () => {
-    
+    //global
+    const [tasks] = useContext(TaskContext)
+    const [state] = useContext(AuthContext)
+    const {token} = state
+
   const [loadItems, setLoadItems] = useState([]);
   const [currentTimeIndex, setCurrentTimeIndex] = useState(15); // Default value
 
@@ -30,11 +36,16 @@ const UpcomingTasks = () => {
 
   const getItems = async () => {
     try {
-      const result = await fetch('http://192.168.190.191:5000/dailyTasks');
-      const data = await result.json();
+      let data = await fetch('http://192.168.190.191:5000/api/v1/dailyTask/get', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    data = await data.json();
+      // const data = tasks
       if (data) {
         // Sort items based on timeIndexValue
-        const sortedItems = data.sort((a, b) => a.timeIndexValue - b.timeIndexValue);
+        const sortedItems = data?.dailyTasks.sort((a, b) => a.timeIndexValue - b.timeIndexValue);
         setLoadItems(sortedItems);
       } else {
         setLoadItems([]);
@@ -75,7 +86,7 @@ const UpcomingTasks = () => {
                 item =>
                   item.selectedDate === new Date().getDate() &&
                   item.selectedDay === new Date().getDay() &&
-                  item.timeIndexValue > currentTimeIndex
+                  item.timeIndexValue > currentTimeIndex-1
               ).slice(0,4)
               .map((item, index) => (
                 <View

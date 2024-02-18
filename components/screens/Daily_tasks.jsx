@@ -12,7 +12,8 @@ import {
   Modal,
   Alert,
 } from 'react-native';
-import { AuthContext } from '../../context/authContext';
+import {AuthContext} from '../../context/authContext';
+import { TaskContext } from '../../context/taskContext';
 
 // Getting screen dimensions
 const {width} = Dimensions.get('screen');
@@ -22,7 +23,10 @@ console.log(width);
 
 function DailyTasks() {
   //gloabal
-  const [state] = useContext(AuthContext)
+  const [state] = useContext(AuthContext);
+  const {token} = state;
+  const [tasks] = useContext(TaskContext)
+
   // Current date
   const currentDate = new Date().getDate();
   console.log(`Current Date: ${currentDate}`);
@@ -137,11 +141,12 @@ function DailyTasks() {
   function sendData() {
     // console.warn({newActivity})
     let data = {newActivity, timeIndexValue, selectedDate, selectedDay};
-    fetch('http://192.168.190.191:5000/newItems', {
+    fetch('http://192.168.190.191:5000/api/v1/dailyTask/send', {
       method: 'POST',
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(data),
     }).then(result => {
@@ -159,10 +164,14 @@ function DailyTasks() {
 
   // Fetching daily tasks
   const getItems = async () => {
-    let result = await fetch('http://192.168.190.191:5000/dailyTasks');
+    let result = await fetch('http://192.168.190.191:5000/api/v1/dailyTask/get', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     result = await result.json();
     if (result) {
-      setloadItems(result);
+      setloadItems(result?.dailyTasks);
     } else {
       setloadItems([]);
     }
