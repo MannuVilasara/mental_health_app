@@ -4,6 +4,8 @@ import {Image} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome6';
 import Icon1 from 'react-native-vector-icons/Ionicons';
 import Icon2 from 'react-native-vector-icons/MaterialCommunityIcons';
+import Icon3 from 'react-native-vector-icons/Fontisto';
+
 import { AuthContext } from '../../context/authContext';
 
 
@@ -29,7 +31,7 @@ const ProfileData = () => {
           </Text>
           <Text
             style={[styles.color_white, {fontSize: 16, textAlign: 'center'}]}>
-            Student
+            {state?.user.occupation}
           </Text>
         </View>
       </View>
@@ -63,6 +65,32 @@ const ProfileData = () => {
         
         <View style={styles.itemBox}>
           <View style={{flexDirection: 'row', width:'32%'}}>
+          <Icon3
+            name={state?.user.gender=="Male"?'male':'female'}
+            color={'black'}
+            size={17}
+            style={styles.frontIconStyle}
+          />
+          <Text style={styles.text}>Gender</Text>
+          </View>
+          <Text style={styles.text2}>{state?.user.gender}</Text>
+        </View>
+
+        <View style={styles.itemBox}>
+          <View style={{flexDirection: 'row', width:'32%'}}>
+          <Icon
+            name={"hourglass-half"}
+            color={'black'}
+            size={17}
+            style={styles.frontIconStyle}
+          />
+          <Text style={styles.text}>Age</Text>
+          </View>
+          <Text style={styles.text2}>{state?.user.age}</Text>
+        </View>
+
+        <View style={styles.itemBox}>
+          <View style={{flexDirection: 'row', width:'32%'}}>
           <Icon1
             name="call"
             color={'black'}
@@ -71,7 +99,7 @@ const ProfileData = () => {
           />
           <Text style={styles.text}>Mobile no.:</Text>
           </View>
-          <Text style={styles.text2}>9877353572</Text>
+          <Text style={styles.text2}>{state?.user.mobile}</Text>
         </View>
 
         <View style={styles.itemBox}>
@@ -84,7 +112,7 @@ const ProfileData = () => {
           />
           <Text style={styles.text}>Address:</Text>
           </View>
-          <Text style={styles.text2}>Village Bath</Text>
+          <Text style={styles.text2}>{state?.user.address}</Text>
         </View>
       </View>
     </View>

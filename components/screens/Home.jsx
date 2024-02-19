@@ -8,6 +8,7 @@ import Bottom from '../Bottom';
 import {useFocusEffect} from '@react-navigation/native';
 
 const Home = () => {
+
   return (
     <ScrollView style={{flex: 1, marginHorizontal: 15}}>
       <Mood />

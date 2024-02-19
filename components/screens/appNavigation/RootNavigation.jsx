@@ -8,6 +8,10 @@ import AppNavigation from './AppNavigation';
 import Register from '../auth/Register';
 import {AuthProvider} from '../../../context/authContext';
 import {AuthContext} from '../../../context/authContext';
+import WelcomeScreen from '../auth/Screens/WelcomeScreen';
+import LoginScreen from '../auth/Screens/LoginScreen';
+import SignupScreen from '../auth/Screens/SignupScreen';
+import SecondSignup from '../auth/Screens/SecondSignup';
 
 const Stack = createStackNavigator();
 
@@ -19,33 +23,39 @@ const RootNavigation = () => {
   console.log(authenticateUser);
   return (
     <>
-        <NavigationContainer>
-          <Stack.Navigator
-            screenOptions={{
-              headerShown: true,
-              gestureEnabled: true,
-              // ...TransitionPresets.SlideFromRightIOS, // This will make the transition from right to left
-            }}>
-            {authenticateUser ? (
-              <Stack.Group>
-                <Stack.Screen
-                  name="MainApp"
-                  component={AppNavigation}
-                  options={{headerShown: false}}
-                />
-              </Stack.Group>
-            ) : (
-              <Stack.Group>
-                <Stack.Screen
-                  name="Login"
-                  options={{headerShown: false}}
-                  component={Login}
-                />
-                <Stack.Screen name="Register" component={Register} />
-              </Stack.Group>
-            )}
-          </Stack.Navigator>
-        </NavigationContainer>
+      <NavigationContainer>
+        <Stack.Navigator
+          screenOptions={{
+            headerShown: true,
+            gestureEnabled: true,
+            // ...TransitionPresets.SlideFromRightIOS, // This will make the transition from right to left
+          }}>
+          {authenticateUser ? (
+            <Stack.Group>
+              <Stack.Screen
+                name="MainApp"
+                component={AppNavigation}
+                options={{headerShown: false}}
+              />
+            </Stack.Group>
+          ) : (
+            // <Stack.Group>
+            //   <Stack.Screen
+            //     name="Login"
+            //     options={{headerShown: false}}
+            //     component={Login}
+            //   />
+            //   <Stack.Screen name="Register" component={Register} />
+            // </Stack.Group>
+            <Stack.Group>
+              <Stack.Screen name="Welcome" component={WelcomeScreen} options={{headerShown: false}}/>
+              <Stack.Screen name="Login" component={LoginScreen} options={{headerShown: false}}/>
+              <Stack.Screen name="SignUp" component={SignupScreen} options={{headerShown: false}}/>
+              <Stack.Screen name="SecondSignup" component={SecondSignup} options={{headerShown: false}}/>
+            </Stack.Group>
+          )}
+        </Stack.Navigator>
+      </NavigationContainer>
     </>
   );
 };

@@ -1,16 +1,23 @@
-import { StyleSheet, Text, View, Image, Dimensions, TouchableOpacity } from 'react-native';
-import React, { useState, useEffect, useContext } from 'react';
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  Dimensions,
+  TouchableOpacity,
+} from 'react-native';
+import React, {useState, useEffect, useContext} from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome5';
-import { TaskContext } from '../../context/taskContext';
-import { AuthContext } from '../../context/authContext';
+import {TaskContext} from '../../context/taskContext';
+import {AuthContext} from '../../context/authContext';
 
-const { width } = Dimensions.get('screen');
+const {width} = Dimensions.get('screen');
 
 const UpcomingTasks = () => {
-    //global
-    const [tasks] = useContext(TaskContext)
-    const [state] = useContext(AuthContext)
-    const {token} = state
+  //global
+  const [tasks] = useContext(TaskContext);
+  const [state] = useContext(AuthContext);
+  const {token} = state;
 
   const [loadItems, setLoadItems] = useState([]);
   const [currentTimeIndex, setCurrentTimeIndex] = useState(15); // Default value
@@ -36,16 +43,21 @@ const UpcomingTasks = () => {
 
   const getItems = async () => {
     try {
-      let data = await fetch('http://192.168.190.191:5000/api/v1/dailyTask/get', {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    data = await data.json();
+      let data = await fetch(
+        'http://192.168.190.191:5000/api/v1/dailyTask/get',
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+      data = await data.json();
       // const data = tasks
       if (data) {
         // Sort items based on timeIndexValue
-        const sortedItems = data?.dailyTasks.sort((a, b) => a.timeIndexValue - b.timeIndexValue);
+        const sortedItems = data?.dailyTasks.sort(
+          (a, b) => a.timeIndexValue - b.timeIndexValue,
+        );
         setLoadItems(sortedItems);
       } else {
         setLoadItems([]);
@@ -55,76 +67,80 @@ const UpcomingTasks = () => {
     }
   };
 
-  console.log(currentTimeIndex)
+  console.log(currentTimeIndex);
   return (
     <View>
-      <View style={{ marginTop: 40 }}>
-        <View style={{ flexDirection: 'row' }}>
+      <View style={{marginTop: 40}}>
+        <View style={{flexDirection: 'row'}}>
           <Text
             style={[
               styles.color_black,
-              { fontSize: 17, fontWeight: 600, width: '50%' },
-            ]}
-          >
+              {fontSize: 17, fontWeight: 600, width: '50%'},
+            ]}>
             Upcoming Tasks
           </Text>
-          <TouchableOpacity style={{ width: '50%'}} onPress={()=>{getItems()}}>
-          <Text
-            style={[
-              styles.color_black,
-              { fontSize: 17, width:'100%',textAlign: 'right' },
-            ]}
-          >
-            Refresh
-          </Text>
+          <TouchableOpacity
+            style={{width: '50%'}}
+            onPress={() => {
+              getItems();
+            }}>
+            <Text
+              style={[
+                styles.color_black,
+                {fontSize: 17, width: '100%', textAlign: 'right'},
+              ]}>
+              Refresh
+            </Text>
           </TouchableOpacity>
         </View>
         <View style={styles.boxContainer}>
-          {loadItems.length > 0 ? (
+          {loadItems
+            .filter(
+              item =>
+                item.selectedDate === new Date().getDate() &&
+                item.selectedDay === new Date().getDay() &&
+                item.timeIndexValue > currentTimeIndex - 1,
+            )
+            .slice(0, 4).length > 0 ? (
             loadItems
               .filter(
                 item =>
                   item.selectedDate === new Date().getDate() &&
                   item.selectedDay === new Date().getDay() &&
-                  item.timeIndexValue > currentTimeIndex-1
-              ).slice(0,4)
+                  item.timeIndexValue > currentTimeIndex - 1,
+              )
+              .slice(0, 4)
               .map((item, index) => (
                 <View
                   key={index}
-                  style={[styles.boxes, { padding: 10, justifyContent: 'center' }]}
-                >
-                  {/* <View style={styles.emojiBox}>
-                    <Image
-                      source={require('../img/activity/yoga.png')}
-                      style={styles.taskImage}
-                    />
-                  </View> */}
+                  style={[
+                    styles.boxes,
+                    {padding: 10, justifyContent: 'center'},
+                  ]}>
                   <Text
                     style={[
                       styles.color_black,
-                      { fontWeight: 600, fontSize: 17, margin: 5 },
-                    ]}
-                  >
+                      {fontWeight: 600, fontSize: 17, margin: 5},
+                    ]}>
                     {item.newActivity}
                   </Text>
                   <Text
                     style={[
                       styles.color_black,
-                      { fontSize: 17, marginBottom: 5, marginLeft: 5 },
-                    ]}
-                  >
+                      {fontSize: 17, marginBottom: 5, marginLeft: 5},
+                    ]}>
                     {(item.timeIndexValue + 8.3).toFixed(2)}
                   </Text>
                 </View>
               ))
           ) : (
-            <View style={[styles.boxes, { padding: 10, justifyContent: 'center' }]}>
+            <View
+              style={[styles.boxes, {padding: 10, justifyContent: 'center'}]}>
               <Text
                 style={[
                   styles.color_black,
-                  { fontSize: 17, marginBottom: 5, marginLeft: 5 },
-                ]}
-              >
+                  {fontSize: 17, marginBottom: 5, marginLeft: 5},
+                ]}>
                 No upcoming tasks
               </Text>
             </View>
