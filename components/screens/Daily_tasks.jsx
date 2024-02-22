@@ -141,7 +141,7 @@ function DailyTasks() {
   function sendData() {
     // console.warn({newActivity})
     let data = {newActivity, timeIndexValue, selectedDate, selectedDay};
-    fetch('http://192.168.190.191:5000/api/v1/dailyTask/send', {
+    fetch('http://192.168.72.191:5000/api/v1/dailyTask/send', {
       method: 'POST',
       headers: {
         Accept: 'application/json',
@@ -164,7 +164,7 @@ function DailyTasks() {
 
   // Fetching daily tasks
   const getItems = async () => {
-    let result = await fetch('http://192.168.190.191:5000/api/v1/dailyTask/get', {
+    let result = await fetch('http://192.168.72.191:5000/api/v1/dailyTask/get', {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -182,7 +182,7 @@ function DailyTasks() {
   // Deleting an item
   const deleteItem = async itemId => {
     try {
-      let result = await fetch(`http://192.168.190.191:5000/delete/${itemId}`, {
+      let result = await fetch(`http://192.168.72.191:5000/delete/${itemId}`, {
         method: 'DELETE',
       });
 

@@ -10,6 +10,7 @@ import PieChart from 'react-native-pie-chart';
 import Bottom from '../../Bottom';
 import {AuthContext} from '../../../context/authContext';
 import {TouchableOpacity} from 'react-native-gesture-handler';
+import url from '../../../context/url';
 
 const MoodAnalysis = () => {
   //global
@@ -24,7 +25,7 @@ const MoodAnalysis = () => {
 
   //function to get data
   const getData = async () => {
-    let result = await fetch('http://192.168.190.191:5000/api/v1/feel/get', {
+    let result = await fetch(`${url}/api/v1/feel/get`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

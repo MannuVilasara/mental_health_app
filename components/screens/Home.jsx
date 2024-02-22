@@ -6,6 +6,8 @@ import DailyTasks from './Daily_tasks';
 import SleepTrack from '../homeComponents/SleepTrack';
 import Bottom from '../Bottom';
 import {useFocusEffect} from '@react-navigation/native';
+import WeeklyTest from '../WeeklyTest/WeeklyTest';
+import WeeklyTestLink from '../WeeklyTest/WeeklyTestLink';
 
 const Home = () => {
 
@@ -15,6 +17,7 @@ const Home = () => {
       <UpcomingTasks />
       <SleepTrack />
       {/* <DailyTasks/> */}
+      <WeeklyTest/>
       <Bottom />
     </ScrollView>
   );

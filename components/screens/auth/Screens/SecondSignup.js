@@ -14,14 +14,14 @@ import { useNavigation } from '@react-navigation/native';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { AuthContext } from '../../../../context/authContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import url from '../../../../context/url';
 
-function SecondSignup({ route }) {
-  const {email1} = route.params
-  const {password1} = route.params
+function SecondSignup(props) {
+  const {email1, password1} = props.route.params
   // const email1 = 'jo';
   // const password1 = 'g';
   //global
-  const [state] = useContext(AuthContext);
+  const [state] = useContext(AuthContext); 
   const { token } = state;
 
   const navigation = useNavigation();
@@ -82,8 +82,8 @@ function SecondSignup({ route }) {
 
   const registerUser = () => {
     let data = {
-      email,
-      password,
+      email : email1,
+      password : password1,
       name,
       age: parseInt(age), // Ensure age is a number
       gender: value,
@@ -92,7 +92,7 @@ function SecondSignup({ route }) {
       occupation,
       DOB: selectedDate
     };
-    fetch('http://192.168.190.191:5000/api/v1/auth/register', {
+    fetch(`${url}/api/v1/auth/register`, {
       method: 'POST',
       headers: {
         Accept: 'application/json',
@@ -104,6 +104,7 @@ function SecondSignup({ route }) {
       if (response.ok) {
         // Registration successful, navigate to login page
         console.log(data);
+        Alert.alert('Account created',`Please login`)
         navigation.navigate("Login");
       } else {
         // Registration failed, show error message from server

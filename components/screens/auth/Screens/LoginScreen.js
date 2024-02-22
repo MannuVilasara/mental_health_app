@@ -15,6 +15,7 @@ import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AuthContext } from '../../../../context/authContext';
 import { Dimensions } from 'react-native';
+import url from '../../../../context/url';
 
 
 export default function LoginScreen({ navigation }) {
@@ -24,6 +25,9 @@ export default function LoginScreen({ navigation }) {
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
+ 
+  console.log(state.url)
+  console.log(state)
 
   const handleLogin = () => {
     try {
@@ -44,7 +48,7 @@ export default function LoginScreen({ navigation }) {
 
   const loginUser = () => {
     let data = { email, password };
-    fetch('http://192.168.190.191:5000/api/v1/auth/login', {
+    fetch(`${url}/api/v1/auth/login`, {
       method: 'POST',
       headers: {
         Accept: 'application/json',

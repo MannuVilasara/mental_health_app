@@ -3,6 +3,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import Header from '../Header';
 import {ScrollView} from 'react-native-gesture-handler';
 import { AuthContext } from '../../context/authContext';
+import url from '../../context/url';
 
 const Mood = () => {
   //globale
@@ -20,7 +21,7 @@ const Mood = () => {
 
   const handleClick = () => {
     let data = { feelNumber, feel };
-    fetch('http://192.168.190.191:5000/api/v1/feel/send', {
+    fetch(`${url}/api/v1/feel/send`, {
       method: 'POST',
       headers: {
         Accept: 'application/json',

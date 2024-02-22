@@ -10,6 +10,7 @@ import React, {useState, useEffect, useContext} from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import {TaskContext} from '../../context/taskContext';
 import {AuthContext} from '../../context/authContext';
+import url from '../../context/url';
 
 const {width} = Dimensions.get('screen');
 
@@ -44,7 +45,7 @@ const UpcomingTasks = () => {
   const getItems = async () => {
     try {
       let data = await fetch(
-        'http://192.168.190.191:5000/api/v1/dailyTask/get',
+        `${url}/api/v1/dailyTask/get`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

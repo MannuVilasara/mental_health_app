@@ -3,6 +3,7 @@ import React, {useContext, useEffect, useState} from 'react';
 import {BarChart} from 'react-native-gifted-charts';
 import Bottom from '../../Bottom';
 import {AuthContext} from '../../../context/authContext';
+import url from '../../../context/url';
 
 const SleepAnalysis = () => {
   //global
@@ -14,7 +15,7 @@ const SleepAnalysis = () => {
   const weekday = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
 
   const getData = async () => {
-    let result = await fetch('http://192.168.190.191:5000/api/v1/sleep/get', {
+    let result = await fetch(`${url}/api/v1/sleep/get`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

@@ -7,13 +7,14 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 //context
 const AuthContext = createContext()
-
+ 
 //provider
 const AuthProvider = ({children}) => {
     const [state, setState] = useState({
         user: null,
-        token: "",
+        token: ""
     });
+
 
     //initial local storage data
     useEffect(() => {
@@ -23,7 +24,7 @@ const AuthProvider = ({children}) => {
                 if (value !== null) {
                     console.log(`stored data: ${value}`);
                     let loginData = JSON.parse(value)
-                    setState({...state, user: loginData?.user, token: loginData?.token })
+                    setState({...state, user: loginData?.user, token: loginData?.token})
                 }
             } catch (e) {
                 console.log(e);

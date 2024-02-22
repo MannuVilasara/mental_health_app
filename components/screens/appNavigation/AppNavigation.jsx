@@ -58,6 +58,7 @@ const AppNavigation = () => {
             tabBarActiveTintColor: '#8ca785',
             tabBarInactiveTintColor: 'white',
           })}>
+          {/* <Tab.Screen name="Home" component={Home} /> */}
           <Tab.Screen name="Home" component={Home} />
           <Tab.Screen name="dailyTask" component={DailyTasks} />
           <Tab.Screen name="Diary" component={DiaryAndAI} />

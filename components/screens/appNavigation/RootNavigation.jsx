@@ -12,6 +12,7 @@ import WelcomeScreen from '../auth/Screens/WelcomeScreen';
 import LoginScreen from '../auth/Screens/LoginScreen';
 import SignupScreen from '../auth/Screens/SignupScreen';
 import SecondSignup from '../auth/Screens/SecondSignup';
+import WeeklyTest from '../../WeeklyTest/WeeklyTest';
 
 const Stack = createStackNavigator();
 
@@ -39,14 +40,6 @@ const RootNavigation = () => {
               />
             </Stack.Group>
           ) : (
-            // <Stack.Group>
-            //   <Stack.Screen
-            //     name="Login"
-            //     options={{headerShown: false}}
-            //     component={Login}
-            //   />
-            //   <Stack.Screen name="Register" component={Register} />
-            // </Stack.Group>
             <Stack.Group>
               <Stack.Screen name="Welcome" component={WelcomeScreen} options={{headerShown: false}}/>
               <Stack.Screen name="Login" component={LoginScreen} options={{headerShown: false}}/>

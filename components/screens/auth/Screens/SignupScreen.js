@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import {
   View,
   Text,
@@ -11,8 +11,13 @@ import {
 } from 'react-native';
 import Modal from 'react-native-modal';
 import { launchImageLibrary, launchCamera } from 'react-native-image-picker';
+import SecondSignup from './SecondSignup';
+import { AuthContext } from '../../../../context/authContext';
+import url from '../../../../context/url';
 
 function SignupScreen({ navigation }) {
+  //global
+  const [state] = useContext(AuthContext)
   const [showPassword, setShowPassword] = useState(false);
   const [isModalVisible, setModalVisible] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
@@ -36,10 +41,11 @@ function SignupScreen({ navigation }) {
       if (password !== confirmPassword) {
         Alert.alert('Passwords do not match');
         setLoading(false);
-        return;
+        return; 
       }
       checkUser();
-      console.log(`Register Data: `, { email, password });
+      console.log(`Varified Data: `, { email, password });
+      // sendMailPass()
     } catch (error) {
       setLoading(false);
       console.log(error);
@@ -50,7 +56,7 @@ function SignupScreen({ navigation }) {
     try {
       setLoading(true);
       const data = { email };
-      const response = await fetch('http://192.168.190.191:5000/api/v1/auth/check', {
+      const response = await fetch(`${url}/api/v1/auth/check`, {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
@@ -69,7 +75,8 @@ function SignupScreen({ navigation }) {
       const responseData = await response.json();
 
       if (responseData.success) {
-        navigation.navigate('SecondSignup', { email, password });
+        navigation.navigate('SecondSignup', { email1: email, password1: password });
+
       } else {
         Alert.alert('User already registered', responseData.message);
       }

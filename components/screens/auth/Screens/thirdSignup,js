@@ -92,7 +92,7 @@ function SecondSignup({ route }) {
       occupation,
       DOB: selectedDate
     };
-    fetch('http://192.168.190.191:5000/api/v1/auth/register', {
+    fetch('http://192.168.72.191:5000/api/v1/auth/register', {
       method: 'POST',
       headers: {
         Accept: 'application/json',

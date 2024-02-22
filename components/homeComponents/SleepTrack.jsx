@@ -6,6 +6,7 @@ import {useState} from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/Feather';
 import {AuthContext} from '../../context/authContext';
+import url from '../../context/url';
 
 const SleepTrack = () => {
   //global
@@ -72,7 +73,7 @@ const SleepTrack = () => {
         wakeTime: date2,
         differenceInMill: difMilliseconds,
       };
-      fetch('http://192.168.190.191:5000/api/v1/sleep/send', {
+      fetch(`${url}/api/v1/sleep/send`, {
         method: 'POST',
         headers: {
           Accept: 'application/json',
