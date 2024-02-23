@@ -8,9 +8,12 @@ import Bottom from '../Bottom';
 import {useFocusEffect} from '@react-navigation/native';
 import WeeklyTest from '../WeeklyTest/WeeklyTest';
 import WeeklyTestLink from '../WeeklyTest/WeeklyTestLink';
+import { AuthContext } from '../../context/authContext';
+
 
 const Home = () => {
 
+  
   return (
     <ScrollView style={{flex: 1, marginHorizontal: 15}}>
       <Mood />

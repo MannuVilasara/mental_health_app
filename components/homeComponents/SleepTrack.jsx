@@ -263,7 +263,7 @@ const SleepTrack = () => {
           <></>
         )}
         {showTimeText2 ? (
-          <TouchableOpacity onPress={sendData()}>
+          <TouchableOpacity onPress={sendData}>
             <View
               style={{alignItems: 'center', margin: 5, alignItems: 'flex-end'}}>
               <View style={styles.sleepRecordButton}>
