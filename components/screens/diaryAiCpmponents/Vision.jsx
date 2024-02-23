@@ -74,7 +74,7 @@ const Vision = () => {
     const send = () => {
       RNFetchBlob.fetch(
         'POST',
-        'http://192.168.72.191:5000/upload',
+        `${url}/upload`,
         {
           'Content-Type': 'multipart/form-data',
         },
