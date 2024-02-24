@@ -13,15 +13,20 @@ import LoginScreen from '../auth/Screens/LoginScreen';
 import SignupScreen from '../auth/Screens/SignupScreen';
 import SecondSignup from '../auth/Screens/SecondSignup';
 import WeeklyTest from '../../WeeklyTest/WeeklyTest';
+import DoctorNavigation from './DoctorNavigation';
 
 const Stack = createStackNavigator();
 
 const RootNavigation = () => {
   //global state
   const [state] = useContext(AuthContext);
+  const {user} = state
   //auth condition is true?
   const authenticateUser = state?.user && state?.token;
   console.log(authenticateUser);
+
+  const mainApp = user?.role?DoctorNavigation:AppNavigation
+
   return (
     <>
       <NavigationContainer>
@@ -35,7 +40,7 @@ const RootNavigation = () => {
             <Stack.Group>
               <Stack.Screen
                 name="MainApp"
-                component={AppNavigation}
+                component={mainApp}
                 options={{headerShown: false}}
               />
             </Stack.Group>

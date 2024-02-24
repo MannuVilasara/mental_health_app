@@ -25,6 +25,8 @@ export default function LoginScreen({ navigation }) {
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
+  const [Patient, setPatient] = useState(true)
+  const [user, setUser] = useState("patient")
  
   console.log(state.url)
   console.log(state)
@@ -48,7 +50,7 @@ export default function LoginScreen({ navigation }) {
 
   const loginUser = () => {
     let data = { email, password };
-    fetch(`${url}/api/v1/auth/login`, {
+    fetch(`${url}/api/v1/auth/${user}/login`, {
       method: 'POST',
       headers: {
         Accept: 'application/json',
@@ -104,6 +106,15 @@ export default function LoginScreen({ navigation }) {
   };
   getData();
 
+  const handlePatient=()=>{
+    setPatient(true)
+    setUser("patient")
+  }
+  const handleDoctor=()=>{
+    setPatient(false)
+    setUser("doctor")
+  }
+
   // Get the dimensions of the screen
   const screenWidth = Dimensions.get('window').width;
   const screenHeight = Dimensions.get('window').height;
@@ -144,7 +155,17 @@ export default function LoginScreen({ navigation }) {
       </View>
 
       <ScrollView contentContainerStyle={styles.maincontainer}>
-        <Text style={styles.heading2}>Enter your details</Text>
+        {/* <Text style={styles.heading2}>Enter your details</Text> */}
+
+        <View style={{justifyContent:'center', flexDirection:'row'}}>
+          <TouchableOpacity onPress={handlePatient}>
+              <Text style={[styles.chooseTab, Patient?{backgroundColor:'rgba(111,145,103,0.8)', color:'white'}:{backgroundColor:'white'}]}>Patient</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={handleDoctor}>
+              <Text style={[styles.chooseTab, Patient?{backgroundColor:'white'}:{backgroundColor:'rgba(111,145,103,0.8)', color:'white'}]}>Doctor</Text>
+          </TouchableOpacity>
+        </View>
+
         <View style={styles.formContainer}>
           <Text style={styles.label}>Email</Text>
           <TextInput
@@ -306,4 +327,13 @@ const styles = StyleSheet.create({
     // left: 10, 
     // zIndex: 10,
   },
+  chooseTab:{
+    // backgroundColor:'rgba(111,145,103,0.8)',
+    marginHorizontal: 10,
+    padding: 6,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+    fontSize: 15,
+    color: '#444444'
+  }
 });

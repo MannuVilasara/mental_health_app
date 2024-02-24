@@ -1,4 +1,4 @@
-import {StyleSheet, Text, View} from 'react-native';
+import {Dimensions, StyleSheet, Text, View} from 'react-native';
 import React, {useContext, useEffect, useRef, useState} from 'react';
 import {
   Camera,
@@ -16,6 +16,8 @@ import url from '../../../context/url';
 import { PermissionsAndroid, Platform } from "react-native";
 import { CameraRoll } from "@react-native-camera-roll/camera-roll";
 import RNFetchBlob from 'rn-fetch-blob'
+import DiaryAndAI from '../DiaryAndAI';
+const { width, height } = Dimensions.get('window')
 
 const Vision = () => {
   //global
@@ -25,11 +27,13 @@ const Vision = () => {
   const device = useCameraDevice('front');
   const {hasPermission, requestPermission} = useCameraPermission();
   const [uri, setUri] = useState();
+  const [isRecording, setIsRecording] = useState(false)
   let newPath;
   const format = useCameraFormat(device, [
     {videoAspectRatio: 1 / 1},
-    {videoResolution: {width: 480, height: 480}},
-    {fps: 30},
+    {videoResolution: {width: 360, height: 360}},
+    {fps: 10},
+    { videoStabilizationMode: 'cinematic-extended' }
   ]);
 
   useEffect(() => {
@@ -49,7 +53,7 @@ const Vision = () => {
   const recordVideo = async () => {
     try {
       camera.current.startRecording({
-        videoBitRate: "2 Mbps",
+        videoBitRate: 2,
         
         onRecordingFinished: video => {
           console.log('Recorded video:', video);
@@ -58,6 +62,7 @@ const Vision = () => {
         },
         onRecordingError: error => console.log(error),
       });
+      setIsRecording(true)
     } catch (error) {
       console.log(error);
     }
@@ -67,6 +72,7 @@ const Vision = () => {
     try {
       await camera.current.stopRecording();
       send();
+      setIsRecording(false)
     } catch (error) {
       console.log(error);
     }
@@ -94,7 +100,6 @@ const Vision = () => {
           console.log(err);
         });
     };
-    
 
   return (
     <View style={styles.container}>
@@ -110,31 +115,23 @@ const Vision = () => {
           video={true}
         />
       </View>
+      <View style={styles.buttonContainer}>
       <TouchableOpacity onPress={recordVideo}>
         <Text
-          style={{
-            color: 'white',
-            backgroundColor: 'green',
-            padding: 10,
-            borderRadius: 20,
-          }}>
+          style={styles.button}>
           record
         </Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={stopRecording}>
         <Text
-          style={{
-            color: 'white',
-            backgroundColor: 'green',
-            padding: 10,
-            borderRadius: 20,
-          }}>
+          style={styles.button}>
           stop
         </Text>
       </TouchableOpacity>
-      {/* <View style={{width: 300, height: 300, backgroundColor: 'yellow'}}>
-        <Video source={{uri}} style={styles.video} />
-      </View> */}
+      </View>
+      <View style={styles.diaryStyle}>
+        {/* <DiaryAndAI isRecording={isRecording}/> */}
+      </View>
     </View>
   );
 };
@@ -147,9 +144,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   cameraContainer: {
-    height: 300,
+    height: height-42,
     backgroundColor: 'green',
-    width: 300,
+    width: width,
     // borderRadius: 150,
     alignContent: 'center',
     justifyContent: 'center',
@@ -157,8 +154,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   camera: {
-    width: 300,
-    height: 300,
+    width: width,
+    height: height,
     borderColor: 'black',
     borderWidth: 20,
   },
@@ -166,4 +163,23 @@ const styles = StyleSheet.create({
     width: 'auto',
     height: '100%',
   },
+  buttonContainer:{
+    flexDirection:'row',
+    position:'absolute',
+    bottom: 120
+  },
+  button:{
+    backgroundColor:"rgba(111,145,103,0.8)",
+    fontFamily:"Poppins-Regular",
+    width: 90,
+    textAlign:'center',
+    justifyContent:'center',
+    margin: 5,
+    fontSize: 17,
+    padding: 5,
+    borderRadius: 10,
+  },
+  diaryStyle:{
+    position:"absolute"
+  }
 });

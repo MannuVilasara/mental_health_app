@@ -8,11 +8,12 @@ import {Item} from 'react-native-paper/lib/typescript/components/Drawer/Drawer';
 import Vision from './diaryAiCpmponents/Vision';
 import { TextInput as GestureHandlerTextInput } from 'react-native-gesture-handler';
 
-const DiaryAndAI = () => {
+const DiaryAndAI = ({isRecording}) => {
   const [start, setStart] = useState(false);
   const [end, setEnd] = useState('');
   const [result, setResult] = useState([]);
   const [finalResult, setFinalResult] = useState([]);
+  // const [startAudio, setStartAudio] = useState(props.clicked)
 
   useEffect(() => {
     Voice.onSpeechStart = onSpeechStart;
@@ -44,7 +45,15 @@ const DiaryAndAI = () => {
         return newResult;
     });
 };
-
+useEffect(() => {
+  if (isRecording) {
+    // Start processing when recording starts
+    startSpeechRecognizing();
+  } else {
+    // Stop processing when recording stops
+    stopSpeechRecognizing();
+  }
+}, [isRecording]);
   const startSpeechRecognizing = async () => {
     try {
       await Voice.start('en-US');
@@ -77,13 +86,12 @@ const DiaryAndAI = () => {
           paddingVertical: 9,
           marginBottom: 5,
         }}>
-        <Icon name={'arrow-right'} color={'black'} size={13} />
-        <Text style={styles.headingText}>Diary and AI</Text>
+        {/* <Icon name={'arrow-right'} color={'black'} size={13} /> */}
+        {/* <Text style={styles.headingText}>Diary and AI</Text> */}
       </View>
-      <Vision />
       <View style={{alignItems: 'center'}}>
         <View style={{flexDirection: 'row'}}>
-          {start ? (
+          {/* {start ? (
             <View style={styles.startBox}>
               <TouchableOpacity
                 onPress={() => {
@@ -105,11 +113,11 @@ const DiaryAndAI = () => {
                   style={{color: 'white', textAlign: 'center', fontSize: 17}}>
                   Start
                 </Text>
-              </TouchableOpacity>
+              </TouchableOpacity> 
             </View>
-          )}
+          )} */}
         </View>
-        <Text style={{backgroundColor: 'green', padding:5, width:'90%'}}>{finalResult}</Text>
+        <Text style={{padding:5, width:'95%'}}>{finalResult}</Text>
         {/* <GestureHandlerTextInput
           style={{ color: 'black', width: 200, height: 200, borderColor: 'black', borderWidth: 1 }}
           onChangeText={handleManualEdit} // Listen for manual edits
@@ -131,7 +139,7 @@ const styles = StyleSheet.create({
     // backgroundColor: '#6dc985',
     padding: 5,
     //   textAlign: 'center',
-    color: 'black',
+    color: '#444444',
     fontWeight: '600',
   },
   startBox: {

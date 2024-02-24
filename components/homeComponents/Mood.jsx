@@ -48,12 +48,12 @@ const Mood = () => {
     });
   };
   return (
-    <View>
+    <View style={{marginHorizontal: 15}}>
       <StatusBar backgroundColor={'#ededed'} />
       <View>
         <View style={{flexDirection: 'row', marginBottom: 20, marginTop: 10}}>
           <View style={{width: '70%'}}>
-            <Text style={[styles.color_black, {fontSize: 20, fontWeight: 600}]}>
+            <Text style={[styles.color_black, {fontSize: 20, fontWeight: 600, fontFamily:'Poppins-SemiBold'}]}>
               Hello {state?.user.name}
             </Text>
             <Text
@@ -154,11 +154,14 @@ export default Mood;
 
 const styles = StyleSheet.create({
   color_black: {
-    color: 'black',
+    fontFamily:'Poppins-Medium',
+    color: '#444444',
   },
   centerText: {
     // backgroundColor: 'yellow',
     textAlign: 'center',
+    fontFamily:'Poppins-SemiBold',
+    color: '#444444',
   },
   emojis: {
     height: 35,

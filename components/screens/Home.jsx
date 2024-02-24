@@ -14,8 +14,10 @@ import { AuthContext } from '../../context/authContext';
 const Home = () => {
 
   
+
+  
   return (
-    <ScrollView style={{flex: 1, marginHorizontal: 15}}>
+    <ScrollView style={{flex: 1}}>
       <Mood />
       <UpcomingTasks />
       <SleepTrack />

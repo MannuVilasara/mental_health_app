@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import {AuthContext} from '../../context/authContext';
 import { TaskContext } from '../../context/taskContext';
+import url from '../../context/url';
 
 // Getting screen dimensions
 const {width} = Dimensions.get('screen');
@@ -99,7 +100,7 @@ function DailyTasks() {
   ];
 
   // Box width for each day (used for styling)
-  const boxWidth = width / 7 - 6;
+  const boxWidth = width / 7 - 4;
 
   // Time slots
   const time = [
@@ -141,7 +142,7 @@ function DailyTasks() {
   function sendData() {
     // console.warn({newActivity})
     let data = {newActivity, timeIndexValue, selectedDate, selectedDay};
-    fetch('http://192.168.72.191:5000/api/v1/dailyTask/send', {
+    fetch(`${url}/api/v1/dailyTask/send`, {
       method: 'POST',
       headers: {
         Accept: 'application/json',
@@ -164,7 +165,7 @@ function DailyTasks() {
 
   // Fetching daily tasks
   const getItems = async () => {
-    let result = await fetch('http://192.168.72.191:5000/api/v1/dailyTask/get', {
+    let result = await fetch(`${url}/api/v1/dailyTask/get`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -182,7 +183,7 @@ function DailyTasks() {
   // Deleting an item
   const deleteItem = async itemId => {
     try {
-      let result = await fetch(`http://192.168.72.191:5000/delete/${itemId}`, {
+      let result = await fetch(`${url}/delete/${itemId}`, {
         method: 'DELETE',
       });
 
@@ -249,7 +250,7 @@ function DailyTasks() {
                           style={[
                             {
                               color:
-                                selectedDate === item.date ? 'white' : 'black',
+                                selectedDate === item.date ? 'white' : '#444444', fontFamily:"Poppins-Regular", fontSize:14
                             },
                           ]}>
                           {dayss(item.day).slice(0, 3)}
@@ -257,7 +258,7 @@ function DailyTasks() {
                         <Text
                           style={{
                             color:
-                              selectedDate === item.date ? 'white' : 'black',
+                              selectedDate === item.date ? 'white' : '#444444',fontFamily:"Poppins-Regular"
                           }}>
                           {item.date}
                         </Text>
@@ -274,8 +275,9 @@ function DailyTasks() {
                 style={{
                   fontSize: 19,
                   marginVertical: 5,
-                  color: 'black',
+                  color: '#444444',
                   marginBottom: 10,
+                  fontFamily:"Poppins-Regular"
                 }}>
                 {dayss(selectedDay)}
               </Text>
@@ -307,13 +309,13 @@ function DailyTasks() {
                                   key={items._id}>
                                   <Text
                                     style={{
-                                      color: 'black',
+                                      color: '#444444',
                                       textAlignVertical: 'center',
                                       borderWidth: 1,
                                       borderColor: '#cfcfcf',
                                       // borderColor: 'white',
                                       paddingVertical: 0,
-                                      paddingHorizontal: 4,
+                                      paddingHorizontal: 5,
                                       marginVertical: 8,
                                       borderRadius: 5,
                                       marginHorizontal: 2,
@@ -357,7 +359,7 @@ function DailyTasks() {
               <View style={styles.modalContent}>
                 <Text
                   style={{
-                    color: 'black',
+                    color: '#444444',
                     margin: 5,
                     marginLeft: 0,
                     fontSize: 17,
@@ -399,7 +401,7 @@ function DailyTasks() {
                     <Text
                       style={[
                         styles.modalButtons,
-                        {color: 'black', backgroundColor: '#6dc985'},
+                        {color: '#444444', backgroundColor: '#6dc985'},
                       ]}>
                       Save
                     </Text>
@@ -427,8 +429,9 @@ const styles = StyleSheet.create({
     // backgroundColor: '#6dc985',
     padding: 5,
     //   textAlign: 'center',
-    color: 'black',
+    color: '#444444',
     fontWeight: '600',
+    fontFamily:'Poppins-SemiBold'
   },
   itemRow: {
     // backgroundColor: 'yellow',
@@ -443,7 +446,7 @@ const styles = StyleSheet.create({
     // height:900
   },
   item: {
-    // backgroundColor:'white',
+    // backgroundColor:'green',
     padding: 7,
     alignItems: 'center',
     borderWidth: 1,
@@ -473,6 +476,7 @@ const styles = StyleSheet.create({
     paddingLeft: 3,
     height: 35,
     textAlignVertical: 'center',
+    fontFamily:'Poppins-Regular'
   },
   inputRow: {
     flexDirection: 'row',
@@ -489,6 +493,7 @@ const styles = StyleSheet.create({
     color: 'black',
     borderRadius: 5,
     marginTop: 10,
+    fontFamily:'Poppins-Regular'
   },
   addItems: {
     color: 'white',

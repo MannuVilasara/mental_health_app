@@ -70,13 +70,13 @@ const UpcomingTasks = () => {
 
   console.log(currentTimeIndex);
   return (
-    <View>
+    <View style={{marginHorizontal: 15}}>
       <View style={{marginTop: 40}}>
         <View style={{flexDirection: 'row'}}>
           <Text
             style={[
               styles.color_black,
-              {fontSize: 17, fontWeight: 600, width: '50%'},
+              {fontSize: 17, fontWeight: 600, width: '50%', fontFamily:'Poppins-SemiBold',},
             ]}>
             Upcoming Tasks
           </Text>
@@ -88,7 +88,7 @@ const UpcomingTasks = () => {
             <Text
               style={[
                 styles.color_black,
-                {fontSize: 17, width: '100%', textAlign: 'right'},
+                {fontSize: 17, width: '100%', textAlign: 'right', fontFamily:'Poppins-Regular'},
               ]}>
               Refresh
             </Text>
@@ -140,7 +140,7 @@ const UpcomingTasks = () => {
               <Text
                 style={[
                   styles.color_black,
-                  {fontSize: 17, marginBottom: 5, marginLeft: 5},
+                  {fontSize: 17, marginBottom: 5, marginLeft: 5, fontFamily:'Poppins-Regular'},
                 ]}>
                 No upcoming tasks
               </Text>
@@ -158,7 +158,7 @@ export default UpcomingTasks;
 
 const styles = StyleSheet.create({
   color_black: {
-    color: 'black',
+    color: '#444444',
   },
   boxContainer: {
     flexDirection: 'row',

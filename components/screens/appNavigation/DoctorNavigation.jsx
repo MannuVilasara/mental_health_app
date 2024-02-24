@@ -8,10 +8,11 @@ import DailyTasks from '../Daily_tasks';
 import DiaryAndAI from '../DiaryAndAI';
 import ProfilePageNavigator from '../ProfileNavigation/ProfilePageNavigator';
 import DailyDiary from '../DailyDiary';
+import DoctorHome from '../doctorPages/DoctorHome';
 
 const Tab = createBottomTabNavigator();
 
-const AppNavigation = () => {
+const DoctorNavigation = () => {
   return (
     <>
         <Tab.Navigator
@@ -33,7 +34,7 @@ const AppNavigation = () => {
               let iconName;
               let iconBackgroundColor = focused ? 'white' : 'transparent';
 
-              if (route.name === 'Home') {
+              if (route.name === 'DoctorHome') {
                 <View style={styles.iconBackground}>
                   {(iconName = focused ? 'home' : 'home')};
                 </View>;
@@ -59,17 +60,17 @@ const AppNavigation = () => {
             tabBarActiveTintColor: '#8ca785',
             tabBarInactiveTintColor: 'white',
           })}>
-          {/* <Tab.Screen name="Home" component={Home} /> */}
-          <Tab.Screen name="Home" component={Home} />
-          <Tab.Screen name="dailyTask" component={DailyTasks} />
-          <Tab.Screen name="Diary" component={DailyDiary}/>
+            
+          <Tab.Screen name="DoctorHome" component={DoctorHome} />
+          {/* <Tab.Screen name="dailyTask" component={DailyTasks} /> */}
+          {/* <Tab.Screen name="Diary" component={DailyDiary}/> */}
           <Tab.Screen name="MainProfile" component={ProfilePageNavigator} />
         </Tab.Navigator>
     </>
   )
 }
 
-export default AppNavigation
+export default DoctorNavigation
 
 const styles = StyleSheet.create({
   iconBackground: {

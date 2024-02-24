@@ -61,6 +61,9 @@ const WeeklyTest = () => {
             body: JSON.stringify(data)
         })
     }
+    const getUserDetails=async()=>{
+        await fetch(`${url}/`)
+    }
 
     let result = 0;
     let newArr = [];
@@ -112,8 +115,10 @@ const WeeklyTest = () => {
     return (
         <GestureScrollView>
             <View style={styles.container}>
-                <Text style={[styles.color_black, { fontSize: 17, fontWeight: '600', width: '50%' }]}>Weekly Test</Text>
+                <View style={{marginHorizontal:15}}>
+                <Text style={[styles.color_black, { fontSize: 17, fontWeight: '600', width: '50%', fontFamily:'Poppins-SemiBold' }]}>Weekly Test</Text>
                 <Text style={[styles.color_black, { fontSize: 15, fontWeight: '400', width: '50%', marginHorizontal:10 }]}>Test is Live</Text>
+                </View>
                 <ScrollView 
                     horizontal 
                     pagingEnabled 
@@ -160,8 +165,8 @@ const WeeklyTest = () => {
                         );
                     })}
                 </ScrollView>
-                {/* <Text style={[styles.color_black, { fontSize: 17, textAlign:'center' }]}>{currentSlide + 1} / {question.length}</Text> */}
-                <Text style={[styles.color_black, { fontSize: 17, textAlign:'center' }]}>slide...</Text>
+                <Text style={[styles.color_black, { fontSize: 17, textAlign:'center' }]}>{currentSlide + 1} / {question.length}</Text>
+                {/* <Text style={[styles.color_black, { fontSize: 17, textAlign:'center' }]}>slide...</Text> */}
 
                 {/* <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 20 }}>
                     <TouchableOpacity onPress={goToPreviousQuestion}>
@@ -176,8 +181,10 @@ const WeeklyTest = () => {
                     <View style={styles.button}><Text style={{ fontSize: 16 }}>Submit</Text></View>
                 </TouchableOpacity>
                 </View>
-                <Text style={{ fontSize: 16, color: 'black' }}>Your Score: <Text style={{ fontWeight: '600' }}>{result}</Text></Text>
-                <Text style={{ fontSize: 16, color: 'black' }}>Your level: <Text style={{ fontWeight: '600' }}>{level}</Text></Text>
+                <View style={{marginHorizontal: 15}}>
+                <Text style={[styles.color_black, { fontSize: 16, color: '#444444' }]}>Your Score: <Text style={{ fontWeight: '600' }}>{result}</Text></Text>
+                <Text style={[styles.color_black, { fontSize: 16, color: '#444444' }]}>Your level: <Text style={{ fontWeight: '600' }}>{level}</Text></Text>
+                </View>
             </View>
             <Bottom />
         </GestureScrollView>
@@ -191,7 +198,8 @@ const styles = StyleSheet.create({
         color: 'white'
     },
     color_black: {
-        color: 'black'
+        color: '#444444',
+        fontFamily:'Poppins-Regular'
     },
     heading: {
         color: 'black',
@@ -212,7 +220,7 @@ const styles = StyleSheet.create({
         height: '95%',
     },
     questionBox: {
-        width: width-30,
+        width: width,
         // backgroundColor:'orange',
         paddingHorizontal: 10,
         // margin: 2,
@@ -235,9 +243,10 @@ const styles = StyleSheet.create({
     },
     optionText: {
         fontSize: 16,
-        color: '#333333',
+        color: '#444444',
         // backgroundColor: 'yellow',
-        width: '90%'
+        width: '90%',
+        fontFamily:'Poppins-Regular'
     },
     selectedOption: {
         backgroundColor: 'rgba(111,145,103,0.9)',

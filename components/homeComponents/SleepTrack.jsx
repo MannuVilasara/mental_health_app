@@ -127,12 +127,12 @@ const SleepTrack = () => {
   console.log(difference.hours);
 
   return (
-    <View style={{marginTop: 19}}>
+    <View style={{marginTop: 19, marginHorizontal: 15}}>
       <View style={{flexDirection: 'row'}}>
         <Text
           style={[
             styles.color_black,
-            {fontSize: 17, fontWeight: 600, width: '50%'},
+            {fontSize: 17, fontWeight: 600, width: '50%', fontFamily:'Poppins-SemiBold'},
           ]}>
           Sleep Track
         </Text>
@@ -140,7 +140,7 @@ const SleepTrack = () => {
           <Text
             style={[
               styles.color_black,
-              {fontSize: 17, width: '100%', textAlign: 'right'},
+              {fontSize: 17, width: '100%', textAlign: 'right',  fontFamily:'Poppins-Regular'},
             ]}>
             Clear
           </Text>
@@ -308,7 +308,7 @@ export default SleepTrack;
 
 const styles = StyleSheet.create({
   color_black: {
-    color: 'black',
+    color: '#444444',
   },
   color_white: {
     color: 'white',

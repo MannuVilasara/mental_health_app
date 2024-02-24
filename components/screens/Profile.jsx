@@ -11,7 +11,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export default function Profile({navigation}) {
 
   const [state, setState] = useContext(AuthContext);
-
+const {user} = state
   const handleLogout = async() => {
     setState({token: "", user: ""});
     await AsyncStorage.removeItem("@auth");
@@ -35,11 +35,11 @@ export default function Profile({navigation}) {
               styles.color_white,
               {fontSize: 18, textAlign: 'center', fontWeight: '600'},
             ]}>
-            Vishawjeet
+            {user.name}
           </Text>
           <Text
             style={[styles.color_white, {fontSize: 16, textAlign: 'center'}]}>
-            Student
+            {user.role}
           </Text>
         </View>
       </View>
@@ -67,7 +67,7 @@ export default function Profile({navigation}) {
           />
         </TouchableOpacity>
 
-        <TouchableOpacity
+          {user.role=="doctor"?<></>:<TouchableOpacity
           style={styles.nextContainer}
           onPress={() => navigation.navigate('Weekly Reports')}>
           <View style={{flexDirection: 'row', width: '50%'}}>
@@ -87,7 +87,8 @@ export default function Profile({navigation}) {
             color={'black'}
             style={styles.iconStyle}
           />
-        </TouchableOpacity>
+        </TouchableOpacity>}
+        
 
         <View style={styles.nextContainer}>
           <View style={{flexDirection: 'row', width: '50%'}}>
