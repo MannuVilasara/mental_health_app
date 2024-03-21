@@ -62,7 +62,7 @@ const Vision = () => {
         },
         onRecordingError: error => console.log(error),
       });
-      setIsRecording(true)
+      // setIsRecording(true)
     } catch (error) {
       console.log(error);
     }
@@ -72,7 +72,7 @@ const Vision = () => {
     try {
       await camera.current.stopRecording();
       send();
-      setIsRecording(false)
+      // setIsRecording(false)
     } catch (error) {
       console.log(error);
     }

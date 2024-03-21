@@ -22,15 +22,17 @@ const MoodAnalysis = () => {
   const [selectedTime, setSelectedTime] = useState(1);
   const [currentData, setCurrentData] = useState([]);
   const [countedFeelings, setCountedFeelings] = useState([]);
-
+  
   //function to get data
   const getData = async () => {
-    let result = await fetch(`${url}/api/v1/feel/get`, {
+    // console.log(`end Point ${endpoint}`)
+      let result = await fetch(`${url}/api/v1/feel/get`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
     result = await result.json();
+    console.log(result)
     if (result) {
       setMoodData(result?.feel); 
       // console.log(`Data: ${JSON.stringify(result)}`);
@@ -55,8 +57,7 @@ const MoodAnalysis = () => {
   // let dateFilter = []
 
   const setItem1 = () => {
-    let morningData = moodData
-      .filter(
+    let morningData = moodData?.filter(
         item =>
           new Date(item.createdAt) > new Date(thresholdDate) &&
           new Date(item.createdAt).getHours() >= 4 &&
@@ -69,8 +70,7 @@ const MoodAnalysis = () => {
   };
 
   const setItem2 = () => {
-    let noonData = moodData
-      .filter(
+    let noonData = moodData?.filter(
         item =>
           new Date(item.createdAt) > new Date(thresholdDate) &&
           new Date(item.createdAt).getHours() >= 10 &&
@@ -84,8 +84,7 @@ const MoodAnalysis = () => {
   };
 
   const setItem3 = () => {
-    let eveningData = moodData
-      .filter(
+    let eveningData = moodData?.filter(
         item =>
           new Date(item.createdAt) > new Date(thresholdDate) &&
           (new Date(item.createdAt).getHours() < 4 ||
@@ -154,7 +153,7 @@ const MoodAnalysis = () => {
               <Text
                 style={[
                   styles.timeSelectText,
-                  selectedTime === 1 ? {color: 'white'} : {color: 'black'},
+                  selectedTime === 1 ? {color: 'white'} : {color: '#444444'},
                 ]}>
                 Morning
               </Text>
@@ -177,7 +176,7 @@ const MoodAnalysis = () => {
               <Text
                 style={[
                   styles.timeSelectText,
-                  selectedTime === 2 ? {color: 'white'} : {color: 'black'},
+                  selectedTime === 2 ? {color: 'white'} : {color: '#444444'},
                 ]}>
                 Noon
               </Text>
@@ -200,7 +199,7 @@ const MoodAnalysis = () => {
               <Text
                 style={[
                   styles.timeSelectText,
-                  selectedTime === 3 ? {color: 'white'} : {color: 'black'},
+                  selectedTime === 3 ? {color: 'white'} : {color: '#444444'},
                 ]}>
                 Evening
               </Text>
@@ -226,7 +225,7 @@ const MoodAnalysis = () => {
               coverFill={'#FFF'}
             />
           ) : (
-            <><View style={{width:150, height:150, justifyContent:'center', alignItems:'center'}}><Text style={{color:'black', fontWeight:'300'}}>No Data Available</Text></View></>
+            <><View style={{width:150, height:150, justifyContent:'center', alignItems:'center'}}><Text style={{color:'#444444', fontWeight:'300'}}>No Data Available</Text></View></>
           )}
 
           <View
@@ -282,16 +281,15 @@ const MoodAnalysis = () => {
           </View>
         </View>
 
-        <Text
+        {/* <Text
           style={[
             styles.color_black,
             {fontSize: 17, fontWeight: 600, width: '50%'},
           ]}>
           Test Report
         </Text>
-        <Text style={styles.color_black}>Test Report of a Patient</Text>
+        <Text style={styles.color_black}>Test Report of a Patient</Text> */}
       </View>
-      <Bottom />
     </View>
   );
 };
@@ -300,7 +298,7 @@ export default MoodAnalysis;
 
 const styles = StyleSheet.create({
   color_black: {
-    color: 'black',
+    color: '#444444',
   },
   color_white: {
     color: 'white',
@@ -317,7 +315,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   timeSelectText: {
-    color: 'black',
+    color: '#444444',
     textAlign: 'center',
     fontSize: 15,
   },

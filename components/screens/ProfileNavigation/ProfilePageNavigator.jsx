@@ -3,6 +3,7 @@ import {createStackNavigator, TransitionPresets} from '@react-navigation/stack';
 import Profile from '../Profile';
 import Analysis from '../../ProfileComponents/Analysis';
 import ProfileData from '../../ProfileComponents/ProfileData';
+import CBTTab from '../../ProfileComponents/CBTTab';
 
 const Stack = createStackNavigator();
 
@@ -20,6 +21,7 @@ const ProfilePageNavigator = () => {
       />
       <Stack.Screen name="Weekly Reports" component={Analysis} />
       <Stack.Screen name="Profile" component={ProfileData} />
+      <Stack.Screen name="D-CBT" component={CBTTab} />
     </Stack.Navigator>
   );
 };

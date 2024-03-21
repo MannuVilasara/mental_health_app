@@ -14,7 +14,7 @@ import { launchImageLibrary, launchCamera } from 'react-native-image-picker';
 import SecondSignup from './SecondSignup';
 import { AuthContext } from '../../../../context/authContext';
 import url from '../../../../context/url';
-
+import LinearGradient from 'react-native-linear-gradient';
 function SignupScreen({ navigation }) {
   //global
   const [state] = useContext(AuthContext)
@@ -90,6 +90,7 @@ function SignupScreen({ navigation }) {
   };
 
   const handleCameraLaunch = () => {
+
     const options = {
       mediaType: 'photo',
       includeBase64: false,
@@ -104,9 +105,10 @@ function SignupScreen({ navigation }) {
         console.log('Camera Error: ', response.error);
       } else {
         let imageUri = response.uri || response.assets?.[0]?.uri;
+
         setSelectedImage(imageUri);
-        toggleModal();
-        console.log('calling signup');
+        // toggleModal();
+        // console.log('calling signup');
       }
     });
   };
@@ -126,12 +128,16 @@ function SignupScreen({ navigation }) {
         console.log('Image picker error: ', response.error);
       } else {
         let imageUri = response.uri || response.assets?.[0]?.uri;
+
         setSelectedImage(imageUri);
       }
     });
   };
 
   return (
+    <LinearGradient colors={['#83C3C4','rgba(3,85,83,0.9)']} style={{flex:1}}
+    start={{x:1,y:0.2}}
+    end={{x:1,y:1}}>
     <ScrollView contentContainerStyle={styles.scrollView}>
       <View style={styles.container}>
         <View style={styles.header}>
@@ -142,7 +148,7 @@ function SignupScreen({ navigation }) {
             }}>
             <Image source={require('../../../../img/icons/assets/LoginSignup/backbutton.png')} />
           </TouchableOpacity>
-          <Text style={styles.title}>Sign-up</Text>
+          
         </View>
         <View style={styles.imageContainer}>
           <View>
@@ -155,30 +161,31 @@ function SignupScreen({ navigation }) {
             style={styles.profileImage}
             resizeMode="contain"
           />
-          <TouchableOpacity style={styles.cameraIconContainer} onPress={toggleModal}>
+          {/* <TouchableOpacity style={styles.cameraIconContainer} onPress={toggleModal}>
             <Image
               source={require('../../../../img/icons/assets/LoginSignup/camera.png')}
               style={styles.cameraIcon}
             />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
           </View>
         </View>
         
         <View style={styles.mainContainer}>
+        <Text style={styles.title}>Create Your Account</Text>
         <View style={styles.formContainer}>
           <Text style={styles.label}>Email</Text>
           <TextInput
             style={styles.input}
             placeholder="Your email id"
             onChangeText={setEmail}
-            placeholderTextColor={'gray'}
+            placeholderTextColor={'#fff'}
           />
           <Text style={styles.label}>Password</Text>
           <View style={styles.passwordInputContainer}>
             <TextInput
               style={styles.passwordInput}
               placeholder="Your password"
-              placeholderTextColor={'gray'}
+              placeholderTextColor={'#fff'}
               secureTextEntry={!showPassword}
               onChangeText={setPassword}
               value={password}
@@ -200,18 +207,18 @@ function SignupScreen({ navigation }) {
           </View>
           <Text style={styles.label}>Confirm Password</Text>
           <TextInput
-            style={[styles.input, password !== confirmPassword ? { color: 'red' } : { color: 'black' }]}
+            style={[styles.input, password !== confirmPassword ? { color: 'red' } : { color: 'white' }]}
             placeholder="Confirm your password"
             onChangeText={setConfirmPassword}
             value={confirmPassword}
-            placeholderTextColor={'gray'}
+            placeholderTextColor={'#fff'}
             secureTextEntry
           />
           <Text style={styles.label}>Doctor ID</Text>
           <TextInput
             style={styles.input}
             placeholder="Enter Doctor ID (if any)"
-            placeholderTextColor={'gray'}
+            placeholderTextColor={'#fff'}
           />
         </View>
         <View style={styles.footer}>
@@ -219,9 +226,9 @@ function SignupScreen({ navigation }) {
             <Text style={styles.buttonText}>{loading ? 'Checking...' : 'Next'}</Text>
           </TouchableOpacity>
           <View style={styles.signupContainer}>
-            <Text style={styles.signupText}>Already have an account?</Text>
+            <Text style={[styles.signupText,{opacity:0.6}]}>Already have an account?</Text>
             <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-              <Text style={[styles.signupText, styles.signupLink]}>Login</Text>
+              <Text style={[styles.signupText, {paddingLeft:5}]}>Login</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -253,6 +260,7 @@ function SignupScreen({ navigation }) {
         </Modal>
       </View>
     </ScrollView>
+    </LinearGradient>
   );
 }
 
@@ -262,7 +270,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor:'rgba(111,145,103,0.8)'
+  
     // backgroundColor: 'white',
   },
   header: {
@@ -275,20 +283,23 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   title: {
-    fontSize: 30,
+    fontSize: 25,
     fontWeight: 'bold',
-    color: 'black',
+    color: '#fff',
+    textAlign:'center',
+    marginBottom:25,
+
   },
   imageContainer: {
     alignItems: 'center',
-    marginTop: 10,
+    // marginTop: 10,
     marginBottom: 6,
     position: 'relative', // Added for positioning camera icon
     // backgroundColor:'green'
   },
   profileImage: {
-    width: 130,
-    height: 130,
+    width: 110,
+    height: 110,
     borderRadius: 65,
   },
   cameraIconContainer: {
@@ -301,43 +312,43 @@ const styles = StyleSheet.create({
     height: 44,
   },
   mainContainer:{
-    backgroundColor: 'rgba(240, 240, 240, 0.9)',
-    paddingTop: 20,
+    // backgroundColor: 'rgba(240, 240, 240, 0.9)',
+    // paddingTop: 20,
     borderTopRightRadius: 30,
     borderTopLeftRadius: 30,
-    marginTop: 15,
+    marginTop: 10,
     height:'100%'
   },
   formContainer: {
     paddingHorizontal: 20,
   },
   label: {
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: 'bold',
-    color: 'black',
+    color: '#fff',
     marginBottom: 5,
   },
   input: {
     height: 'auto',
-    borderColor: 'black',
+    borderColor: '#fff',
     borderBottomWidth: 1,
     marginBottom: 20,
-    fontSize: 16,
-    color: 'black',
+    fontSize: 15,
+    color: 'white',
     height: 'auto',
   },
   passwordInputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     borderBottomWidth: 1,
-    borderColor: 'black',
+    borderColor: 'white',
     marginBottom: 20,
   },
   passwordInput: {
     flex: 1,
     height: 40,
     fontSize: 16,
-    color: 'black'
+    color: '#fff'
   },
   eyeIconContainer: {
     position: 'absolute',
@@ -353,7 +364,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   button: {
-    backgroundColor: 'black',
+    backgroundColor: '#fff',
     paddingVertical: 10,
     borderRadius: 100,
     marginTop: 20,
@@ -362,7 +373,7 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: 'white',
+    color: '#458194',
     textAlign: 'center',
   },
   signupContainer: {
@@ -373,10 +384,13 @@ const styles = StyleSheet.create({
   signupText: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: 'black',
+    color: '#fff',
   },
   signupLink: {
-    textDecorationLine: 'underline',
+    // textDecorationLine: 'underline',
+    fontWeight: 'bold',
+
+
   },
   modal: {
     margin: 0,

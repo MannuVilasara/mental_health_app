@@ -76,12 +76,12 @@ const SleepAnalysis = () => {
             spacing={15}
             stepHeight={20}
             barWidth={25}
-            frontColor={'rgba(3,85,83,0.8)'}
+            frontColor={'rgba(111,145,103,0.7)'}
             rulesColor={'black'}
             sideColor={'black'}
             isAnimated
-            yAxisTextStyle={{color: 'black'}}
-            xAxisLabelTextStyle={{color:'black'}}
+            yAxisTextStyle={{color: '#444444'}}
+            xAxisLabelTextStyle={{color:'#444444'}}
           />
         </View>
       </View>
@@ -93,7 +93,7 @@ export default SleepAnalysis;
 
 const styles = StyleSheet.create({
   color_black: {
-    color: 'black',
+    color: '#444444',
   },
   color_white: {
     color: 'white',

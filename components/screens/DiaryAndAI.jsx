@@ -13,7 +13,6 @@ const DiaryAndAI = ({isRecording}) => {
   const [end, setEnd] = useState('');
   const [result, setResult] = useState([]);
   const [finalResult, setFinalResult] = useState([]);
-  // const [startAudio, setStartAudio] = useState(props.clicked)
 
   useEffect(() => {
     Voice.onSpeechStart = onSpeechStart;
@@ -47,10 +46,8 @@ const DiaryAndAI = ({isRecording}) => {
 };
 useEffect(() => {
   if (isRecording) {
-    // Start processing when recording starts
     startSpeechRecognizing();
   } else {
-    // Stop processing when recording stops
     stopSpeechRecognizing();
   }
 }, [isRecording]);
@@ -65,17 +62,14 @@ useEffect(() => {
   const stopSpeechRecognizing = async () => {
     try {
       await Voice.stop();
-      // await Voice.destroy();
       setStart(false);
-      // setResult([]);
-      // setFinalResult([]);
       onSpeechResults()
     } catch (error) {
       console.log(error);
     }
   };
   const handleManualEdit = (text) => {
-    setFinalResult(text); // Update finalResult state on manual edit
+    setFinalResult(text); 
   };
   return (
     <ScrollView>
@@ -86,44 +80,19 @@ useEffect(() => {
           paddingVertical: 9,
           marginBottom: 5,
         }}>
-        {/* <Icon name={'arrow-right'} color={'black'} size={13} /> */}
-        {/* <Text style={styles.headingText}>Diary and AI</Text> */}
       </View>
       <View style={{alignItems: 'center'}}>
         <View style={{flexDirection: 'row'}}>
-          {/* {start ? (
-            <View style={styles.startBox}>
-              <TouchableOpacity
-                onPress={() => {
-                  stopSpeechRecognizing();
-                }}>
-                <Text
-                  style={{color: 'white', textAlign: 'center', fontSize: 17}}>
-                  End
-                </Text>
-              </TouchableOpacity>
-            </View>
-          ) : (
-            <View style={styles.startBox}>
-              <TouchableOpacity
-                onPress={() => {
-                  startSpeechRecognizing();
-                }}>
-                <Text
-                  style={{color: 'white', textAlign: 'center', fontSize: 17}}>
-                  Start
-                </Text>
-              </TouchableOpacity> 
-            </View>
-          )} */}
+         
         </View>
-        <Text style={{padding:5, width:'95%'}}>{finalResult}</Text>
-        {/* <GestureHandlerTextInput
-          style={{ color: 'black', width: 200, height: 200, borderColor: 'black', borderWidth: 1 }}
-          onChangeText={handleManualEdit} // Listen for manual edits
-          value={finalResult} // Bind value to finalResult state
-          multiline={true}
-        /> */}
+        <View style={{padding:5, width:300, backgroundColor:'rgba(111,145,103,0.4)', flexDirection:'row', alignItems:'center', borderRadius:5}}>
+          <ScrollView horizontal>
+            <Text style={{padding:5}}>{finalResult}</Text>
+          </ScrollView>
+          <TouchableOpacity onPress={()=>{setFinalResult([])}}>
+            <Text style={{backgroundColor:'rgba(111,145,103,1)', padding:2, paddingHorizontal: 8, borderRadius: 5}}>Clear</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </ScrollView>
   );

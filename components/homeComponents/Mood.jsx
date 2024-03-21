@@ -1,17 +1,22 @@
-import {StyleSheet, Text, View, Image, StatusBar, TouchableOpacity, Alert} from 'react-native';
 import React, { useContext, useEffect, useState } from 'react';
-import Header from '../Header';
-import {ScrollView} from 'react-native-gesture-handler';
+import { StyleSheet, Text, View, Image, StatusBar, TouchableOpacity, Alert } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { ScrollView } from 'react-native-gesture-handler';
 import { AuthContext } from '../../context/authContext';
 import url from '../../context/url';
 
 const Mood = () => {
-  //globale
-  const [state] = useContext(AuthContext)
-  const {token} = state
-  //feeling
-  const [feelNumber, setFeelNumber] = useState(null); // Initialize with null to avoid setting to 0 unintentionally
+  const [state] = useContext(AuthContext);
+  const { token } = state;
+
+  const [feelNumber, setFeelNumber] = useState(null);
   const [feel, setFeel] = useState('');
+
+  const [streak, setStreak] = useState(0);
+
+  useEffect(() => {
+    loadStreak();
+  }, []);
 
   useEffect(() => {
     if (feel !== '' && feelNumber !== null) {
@@ -37,29 +42,55 @@ const Mood = () => {
       return response.json();
     })
     .then(result => {
-      // Handle success
       Alert.alert('Updated', `You are feeling ${feel}`);
-      setFeelNumber(null); // Reset to null after successful submission
+      updateStreak();
+      setFeelNumber(null);
       setFeel('');
     })
     .catch(error => {
-      // Handle error
-      // console.error('There was a problem with the fetch operation:', error);
+      console.error('Error:', error);
     });
   };
+
+  const updateStreak = async () => {
+    const updatedStreak = streak + 1;
+    console.log('Updated Streak:', updatedStreak);
+    setStreak(updatedStreak);
+    try {
+      await AsyncStorage.setItem('streak', updatedStreak.toString());
+      console.log('Streak updated in AsyncStorage');
+    } catch (error) {
+      console.error('Error updating streak:', error);
+    }
+  };
+  
+  const loadStreak = async () => {
+    try {
+      const savedStreak = await AsyncStorage.getItem('streak');
+      if (savedStreak !== null) {
+        const parsedStreak = parseInt(savedStreak);
+        console.log('Loaded Streak:', parsedStreak);
+        setStreak(parsedStreak);
+      }
+    } catch (error) {
+      console.error('Error loading streak:', error);
+    }
+  };
+  
+
   return (
-    <View style={{marginHorizontal: 15}}>
+    <View style={{ marginHorizontal: 15 }}>
       <StatusBar backgroundColor={'#ededed'} />
       <View>
-        <View style={{flexDirection: 'row', marginBottom: 20, marginTop: 10}}>
-          <View style={{width: '70%'}}>
-            <Text style={[styles.color_black, {fontSize: 20, fontWeight: 600, fontFamily:'Poppins-SemiBold'}]}>
+        <View style={{ flexDirection: 'row', marginBottom: 20, marginTop: 10 }}>
+          <View style={{ width: '70%' }}>
+            <Text style={[styles.color_black, { fontSize: 20, fontWeight: 600, fontFamily: 'Poppins-SemiBold' }]}>
               Hello {state?.user.name}
             </Text>
             <Text
               style={[
                 styles.color_black,
-                {fontSize: 15, marginTop: 5, marginBottom: 5},
+                { fontSize: 15, marginTop: 5, marginBottom: 5 },
               ]}>
               How are you feeling now?
             </Text>
@@ -70,13 +101,13 @@ const Mood = () => {
               justifyContent: 'center',
               alignItems: 'flex-end',
             }}>
-            <Image style={styles.image} source={require('../../img/logo1.jpg')} />
+            {/* <Image style={styles.image} source={require('../../img/logo1.jpg')} /> */}
+            <Text style={{backgroundColor:'rgba(111,145,103,0.7)', fontFamily:'Poppins-SemiBold', fontSize:19, borderRadius:150, height: 50, width: 50, textAlign:'center', textAlignVertical:'center', borderColor:'rgba(177, 252, 3,0.3)', borderWidth: 7}}>{streak}</Text>
           </View>
         </View>
 
         <View style={styles.emojiContainer}>
-
-          <TouchableOpacity onPress={()=>{{setFeel('sad')} {setFeelNumber(0)} handleClick()}}>
+          <TouchableOpacity onPress={() => { setFeel('sad'); setFeelNumber(0); handleClick(); }}>
             <View style={styles.emojiBox}>
               <Image
                 style={styles.emojis}
@@ -87,13 +118,13 @@ const Mood = () => {
               style={[
                 styles.color_black,
                 styles.centerText,
-                {marginTop: 4, fontWeight: 600},
+                { marginTop: 4, fontWeight: 600 },
               ]}>
               Sad
             </Text>
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={()=>{{setFeel('normal')} {setFeelNumber(1)} handleClick()}}>
+          <TouchableOpacity onPress={() => { setFeel('normal'); setFeelNumber(1); handleClick(); }}>
             <View style={styles.emojiBox}>
               <Image
                 style={styles.emojis}
@@ -104,13 +135,13 @@ const Mood = () => {
               style={[
                 styles.color_black,
                 styles.centerText,
-                {marginTop: 4, fontWeight: 600},
+                { marginTop: 4, fontWeight: 600 },
               ]}>
               Normal
             </Text>
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={()=>{{setFeel('happy')} {setFeelNumber(2)} handleClick()}}>
+          <TouchableOpacity onPress={() => { setFeel('happy'); setFeelNumber(2); handleClick(); }}>
             <View style={styles.emojiBox}>
               <Image
                 style={styles.emojis}
@@ -121,13 +152,13 @@ const Mood = () => {
               style={[
                 styles.color_black,
                 styles.centerText,
-                {marginTop: 4, fontWeight: 600},
+                { marginTop: 4, fontWeight: 600 },
               ]}>
               Happy
             </Text>
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={()=>{{setFeel('excited')} {setFeelNumber(3)} handleClick()}}>
+          <TouchableOpacity onPress={() => { setFeel('excited'); setFeelNumber(3); handleClick(); }}>
             <View style={styles.emojiBox}>
               <Image
                 style={styles.emojis}
@@ -138,12 +169,11 @@ const Mood = () => {
               style={[
                 styles.color_black,
                 styles.centerText,
-                {marginTop: 4, fontWeight: 600},
+                { marginTop: 4, fontWeight: 600 },
               ]}>
               Excited
             </Text>
           </TouchableOpacity>
-
         </View>
       </View>
     </View>
@@ -154,13 +184,12 @@ export default Mood;
 
 const styles = StyleSheet.create({
   color_black: {
-    fontFamily:'Poppins-Medium',
+    fontFamily: 'Poppins-Medium',
     color: '#444444',
   },
   centerText: {
-    // backgroundColor: 'yellow',
     textAlign: 'center',
-    fontFamily:'Poppins-SemiBold',
+    fontFamily: 'Poppins-SemiBold',
     color: '#444444',
   },
   emojis: {

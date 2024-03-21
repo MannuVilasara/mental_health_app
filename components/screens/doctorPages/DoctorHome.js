@@ -2,6 +2,10 @@ import React, { useState, useEffect, useCallback, useContext } from 'react';
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity } from 'react-native';
 import { AuthContext } from '../../../context/authContext';
 import url from '../../../context/url';
+import SleepAnalysis from '../../ProfileComponents/AnalysisComponents/SleepAnalysis';
+import Bottom from '../../Bottom';
+import MoodAnalysis from '../../ProfileComponents/AnalysisComponents/MoodAnalysis';
+import MoodAnalysisDoctor from './MoodAnalysisDoctor';
 
 const DoctorHome = () => {
   const [state] = useContext(AuthContext)
@@ -37,6 +41,10 @@ const DoctorHome = () => {
     }
   }
 
+  const getUerSleepReport=()=>{
+    
+  }
+
   useEffect(() => {
     getUserDetails();
   }, []);
@@ -48,6 +56,7 @@ const DoctorHome = () => {
   }, [selectedUserId]);
 
   return (
+    <ScrollView nestedScrollEnabled={true}>
     <View style={styles.container}>
       <Text style={[styles.color, styles.heading]}>Monitor you patients</Text>
       <Text style={[styles.color, { fontSize: 16, marginHorizontal: 5 }]}>Hi Dr.{user.name}</Text>
@@ -62,7 +71,7 @@ const DoctorHome = () => {
               Name
             </Text>
           </View>
-          <ScrollView>
+          <ScrollView nestedScrollEnabled={true}>
             {userDetails.map((item, index) => (
               <TouchableOpacity key={index} onPress={() => {
                 setSelectedUser(index);
@@ -93,7 +102,7 @@ const DoctorHome = () => {
               Score
             </Text>
           </View>
-          <ScrollView>
+          <ScrollView nestedScrollEnabled={true}>
             {weeklyTestReports.length > 0 && (
               weeklyTestReports.map((item, index) => (
                 <View key={index} style={[{ flexDirection: 'row', padding: 4, margin: 3 }]}>
@@ -110,6 +119,9 @@ const DoctorHome = () => {
         </View>
       </View>
     </View>
+    <MoodAnalysisDoctor userID={selectedUserId}/>
+    <Bottom/>
+    </ScrollView>
   )
 }
 

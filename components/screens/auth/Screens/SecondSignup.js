@@ -15,7 +15,7 @@ import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { AuthContext } from '../../../../context/authContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import url from '../../../../context/url';
-
+import LinearGradient from 'react-native-linear-gradient';
 function SecondSignup(props) {
   const {email1, password1} = props.route.params
   // const email1 = 'jo';
@@ -121,6 +121,9 @@ function SecondSignup(props) {
   };
 
   return (
+    <LinearGradient colors={['#83C3C4','rgba(3,85,83,0.9)']} style={{flex:1}}
+    start={{x:1,y:0}}
+    end={{x:1,y:1}}>
     <ScrollView contentContainerStyle={styles.scrollView}>
     <View style={styles.container}>
       <View style={styles.header}>
@@ -137,22 +140,22 @@ function SecondSignup(props) {
       </View>
       
       <View style={styles.mainContainer}>
-        <Text style={{fontSize: 20, color:'black', fontWeight:'600', textAlign:'center', margin: 20}}>Little more about yourself</Text>
+        {/* <Text style={{fontSize: 20, color:'#fff', fontWeight:'600', textAlign:'center', margin: 20}}>Little more about yourself</Text> */}
       <View style={styles.formContainer}>
         <Text style={styles.label}>Name</Text>
         <TextInput
             style={styles.input}
-            placeholder="Enter yout name"
+            placeholder="Enter your name"
             onChangeText={text => { setName(text) }}
             value={name}
-            placeholderTextColor={'#676767'} />
+            placeholderTextColor={'#fff'} />
         <Text style={styles.label}>Age</Text>
           <TextInput
             style={styles.input}
             placeholder="Enter your age"
             onChangeText={text => { setAge(text) }}
             value={age}
-            placeholderTextColor={'#676767'} />
+            placeholderTextColor={'#fff'} />
         <Text style={styles.label}>Date of birth</Text>
         <View style={{position:'relative'}}>
           <TextInput
@@ -161,9 +164,9 @@ function SecondSignup(props) {
             value={selectedDate}
             onChangeText={text => { setselectedDate(text) }}
             keyboardType="numeric"
-            placeholderTextColor={'#676767'} />
+            placeholderTextColor={'#fff'} />
           <TouchableOpacity
-            style={{ position: 'absolute', right: 0 }}
+            style={{ position: 'absolute', right: 0,top:12 }}
             onPress={showDatePicker}>
             <Image
               source={require('../../../../img/icons/assets/LoginSignup/calender.png')}
@@ -195,7 +198,7 @@ function SecondSignup(props) {
             placeholderStyle={{
               fontSize: 16,
               fontWeight: '400',
-              // color: '#676767',
+              color: '#fff',
             }}
           />
         </View>
@@ -206,21 +209,21 @@ function SecondSignup(props) {
             placeholder="+91"
             onChangeText={text => { setMobile(text) }}
             value={mobile}
-            placeholderTextColor={'#676767'}/>
+            placeholderTextColor={'#fff'}/>
       <Text style={styles.label}>Occupation</Text>
       <TextInput
             style={styles.input}
             placeholder="Occupation"
             onChangeText={text => { setOccupation(text) }}
             value={occupation}
-            placeholderTextColor={'#676767'} />
+            placeholderTextColor={'#fff'} />
       <Text style={styles.label}>Address</Text>
       <TextInput
             style={styles.input}
             placeholder="Residential Address"
             onChangeText={text => { setAddress(text) }}
             value={address}
-            placeholderTextColor={'#676767'} />
+            placeholderTextColor={'#fff'} />
       </View>
       <View style={styles.footer}>
         <TouchableOpacity style={styles.button} onPress={handleRegister}>
@@ -242,6 +245,7 @@ function SecondSignup(props) {
       onCancel={hideDatePicker}
     />
   </ScrollView>
+  </LinearGradient>
   );
 }
 
@@ -251,7 +255,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor:'rgba(111,145,103,0.8)'
+    // backgroundColor:'rgba(111,145,103,0.8)'
     // backgroundColor: 'white',
   },
   header: {
@@ -264,9 +268,11 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   title: {
-    fontSize: 30,
+    fontSize: 25,
     fontWeight: 'bold',
-    color: 'black',
+    color: '#fff',
+    textAlign:'center',
+    alignItems:'center'
   },
   imageContainer: {
     alignItems: 'center',
@@ -290,7 +296,7 @@ const styles = StyleSheet.create({
     height: 44,
   },
   mainContainer:{
-    backgroundColor: 'rgba(240, 240, 240, 0.9)',
+    // backgroundColor: 'rgba(240, 240, 240, 0.9)',
     // paddingTop: 20,
     borderTopRightRadius: 30,
     borderTopLeftRadius: 30,
@@ -301,31 +307,31 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   label: {
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: 'bold',
-    color: 'black',
+    color: '#fff',
     marginBottom: 5,
   },
   input: {
     height: 'auto',
-    borderColor: 'black',
+    borderColor: '#fff',
     borderBottomWidth: 1,
     marginBottom: 20,
-    fontSize: 16,
-    color: 'black',
+    fontSize: 15,
+    color: '#fff',
   },
   passwordInputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     borderBottomWidth: 1,
-    borderColor: 'black',
+    borderColor: '#fff',
     marginBottom: 20,
   },
   passwordInput: {
     flex: 1,
     height: 40,
     fontSize: 16,
-    color: 'black'
+    color: '#fff'
   },
   eyeIconContainer: {
     position: 'absolute',
@@ -341,7 +347,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   button: {
-    backgroundColor: 'black',
+    backgroundColor: 'white',
     paddingVertical: 10,
     borderRadius: 100,
     marginTop: 20,
@@ -350,7 +356,7 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: 'white',
+    color: '#458194',
     textAlign: 'center',
   },
   signupContainer: {
@@ -361,7 +367,7 @@ const styles = StyleSheet.create({
   signupText: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: 'black',
+    color: '#fff',
   },
   signupLink: {
     textDecorationLine: 'underline',
@@ -393,7 +399,7 @@ const styles = StyleSheet.create({
   },
   optionText: {
     fontSize: 18,
-    color: 'black',
+    color: '#fff',
   },
   borderBottom: {
     borderBottomWidth: 1,

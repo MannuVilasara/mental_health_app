@@ -7,6 +7,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/Feather';
 import {AuthContext} from '../../context/authContext';
 import url from '../../context/url';
+import { date, number } from 'yup';
 
 const SleepTrack = () => {
   //global
@@ -20,7 +21,6 @@ const SleepTrack = () => {
   const [show1, setShow1] = useState(false);
   const [mode1, setMode1] = useState('date');
   const [mode2, setMode2] = useState('date');
-  const [date21, setDate21] = useState(null);
   const [show2, setShow2] = useState(false);
   const [difference, setDifference] = useState({hours: 0, minutes: 0});
   const [arrowPosition, setArrowPosition] = useState(0);
@@ -31,12 +31,21 @@ const SleepTrack = () => {
 
   useEffect(() => {
     const calculateDifference = () => {
-      const diffInMilliseconds = Math.abs(date2.getTime() - date1.getTime());
+      let differenceInMill = number
+      console.log(`fixing error: ${date1.getHours()}`)
+      if (date1.getHours()<=24 && date1.getHours()>=12){
+        diffInMilliseconds = Math.abs(86400000-date1.getTime() + date2.getTime());
+      }
+      else{
+        diffInMilliseconds = Math.abs(date1.getTime() - date2.getTime());
+      }
       setdifMilliseconds(diffInMilliseconds);
       const hours = Math.floor(diffInMilliseconds / (1000 * 60 * 60));
       const minutes = Math.floor(
         (diffInMilliseconds % (1000 * 60 * 60)) / (1000 * 60),
       );
+      console.log(`jingalala Hours = ${hours}`)
+      console.log(`jingalala Minutes = ${minutes}`)
       setDifference({hours, minutes});
 
       // Calculate sleep quality and score
@@ -284,8 +293,10 @@ const SleepTrack = () => {
           value={date1}
           mode={mode1}
           is24Hour={true}
-          display="default"
+          display="spinner"
           onChange={onChange1}
+          negativeButton={{label: 'Cancel'}}
+          positiveButton={{label: 'Set'}}
         />
       )}
       {show2 && (

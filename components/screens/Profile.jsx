@@ -4,6 +4,7 @@ import Bottom from '../Bottom';
 import Icon from 'react-native-vector-icons/FontAwesome6';
 import Icon1 from 'react-native-vector-icons/Ionicons';
 import Icon2 from 'react-native-vector-icons/MaterialCommunityIcons';
+import Icon3 from 'react-native-vector-icons/MaterialIcons'
 import {TouchableOpacity} from 'react-native';
 import {AuthContext} from '../../context/authContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -67,18 +68,18 @@ const {user} = state
           />
         </TouchableOpacity>
 
-          {user.role=="doctor"?<></>:<TouchableOpacity
+          {user.role=="doctor"?<></>:<><TouchableOpacity
           style={styles.nextContainer}
-          onPress={() => navigation.navigate('Weekly Reports')}>
+          onPress={() => navigation.navigate('D-CBT')}>
           <View style={{flexDirection: 'row', width: '50%'}}>
-            <Icon1
-              name="analytics"
+            <Icon3
+              name="ondemand-video"
               color={'black'}
               size={17}
               style={styles.frontIconStyle}
             />
             <Text style={[styles.color_black, styles.textStyle1]}>
-              Weekly Reports
+              D-CBT
             </Text>
           </View>
           <Icon
@@ -87,7 +88,28 @@ const {user} = state
             color={'black'}
             style={styles.iconStyle}
           />
-        </TouchableOpacity>}
+        </TouchableOpacity>
+        <TouchableOpacity
+        style={styles.nextContainer}
+        onPress={() => navigation.navigate('Weekly Reports')}>
+        <View style={{flexDirection: 'row', width: '50%'}}>
+          <Icon1
+            name="analytics"
+            color={'black'}
+            size={17}
+            style={styles.frontIconStyle}
+          />
+          <Text style={[styles.color_black, styles.textStyle1]}>
+            Weekly Reports
+          </Text>
+        </View>
+        <Icon
+          name="arrow-right"
+          size={17}
+          color={'black'}
+          style={styles.iconStyle}
+        />
+      </TouchableOpacity></>}
         
 
         <View style={styles.nextContainer}>
