@@ -182,8 +182,9 @@ const WeeklyTest = () => {
                 </TouchableOpacity>
                 </View>
                 <View style={{marginHorizontal: 15}}>
-                <Text style={[styles.color_black, { fontSize: 16, color: '#444444' }]}>Your Score: <Text style={{ fontWeight: '600' }}>{result}</Text></Text>
+                {/* <Text style={[styles.color_black, { fontSize: 16, color: '#444444' }]}>Your Score: <Text style={{ fontWeight: '600' }}>{result}</Text></Text> */}
                 <Text style={[styles.color_black, { fontSize: 16, color: '#444444' }]}>Your level: <Text style={{ fontWeight: '600' }}>{level}</Text></Text>
+                <Text style={[styles.color_black, { fontSize: 16, color: '#444444' }]}>{"{Score is avalable in weekly reports section.}"}</Text>
                 </View>
             </View>
             <Bottom />

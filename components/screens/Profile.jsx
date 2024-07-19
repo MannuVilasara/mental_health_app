@@ -27,7 +27,7 @@ const {user} = state
         <View>
           <View style={styles.imageView}>
             <Image
-              source={require('../../img/logo1.jpg')}
+              source={require('../../img/icons/assets/LoginSignup/userProfile.png')}
               style={styles.image}
             />
           </View>

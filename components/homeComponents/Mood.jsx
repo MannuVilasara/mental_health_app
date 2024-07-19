@@ -101,8 +101,8 @@ const Mood = () => {
               justifyContent: 'center',
               alignItems: 'flex-end',
             }}>
-            {/* <Image style={styles.image} source={require('../../img/logo1.jpg')} /> */}
-            <Text style={{backgroundColor:'rgba(111,145,103,0.7)', fontFamily:'Poppins-SemiBold', fontSize:19, borderRadius:150, height: 50, width: 50, textAlign:'center', textAlignVertical:'center', borderColor:'rgba(177, 252, 3,0.3)', borderWidth: 7}}>{streak}</Text>
+            <Image style={styles.image} source={require('../../img/icons/assets/LoginSignup/userProfile.png')} /> 
+            {/* <Text style={{backgroundColor:'rgba(111,145,103,0.7)', fontFamily:'Poppins-SemiBold', fontSize:19, borderRadius:150, height: 50, width: 50, textAlign:'center', textAlignVertical:'center', borderColor:'rgba(177, 252, 3,0.3)', borderWidth: 7}}>{streak}</Text>  */}
           </View>
         </View>
 
@@ -212,7 +212,7 @@ const styles = StyleSheet.create({
     height: 50,
     width: 50,
     borderRadius: 50,
-    borderColor: 'white',
     borderWidth: 2,
+    borderColor:'rgba(177, 252, 3,0.3)', borderWidth: 7
   },
 });
