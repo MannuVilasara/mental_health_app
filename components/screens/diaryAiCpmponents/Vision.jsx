@@ -62,7 +62,7 @@ const Vision = () => {
         },
         onRecordingError: error => console.log(error),
       });
-      // setIsRecording(true)
+      setIsRecording(true)
     } catch (error) {
       console.log(error);
     }
@@ -72,7 +72,7 @@ const Vision = () => {
     try {
       await camera.current.stopRecording();
       send();
-      // setIsRecording(false)
+      setIsRecording(false)
     } catch (error) {
       console.log(error);
     }
@@ -114,27 +114,27 @@ const Vision = () => {
           isActive={true}
           video={true}
         />
-        <View style={{backgroundColor:'black', margin:5, border:'2px solid black', borderRadius:10}}>
+        {/* <View style={{backgroundColor:'black', margin:5, border:'2px solid black', borderRadius:10}}>
           <Text style={{padding:9}}>AI features like sentimental analysis are currently not availbale in production app. Contact development team for more details. </Text>
-        </View>
+        </View> */}
       </View>
       <View style={styles.buttonContainer}>
-      <TouchableOpacity disabled onPress={recordVideo}>
+      <TouchableOpacity onPress={recordVideo}>
         <Text
           style={styles.button}>
           record
         </Text>
       </TouchableOpacity>
-      <TouchableOpacity disabled onPress={stopRecording}>
+      <TouchableOpacity onPress={stopRecording}>
         <Text
           style={styles.button}>
           stop
         </Text>
       </TouchableOpacity>
       </View>
-      <View style={styles.diaryStyle}>
-        {/* <DiaryAndAI isRecording={isRecording}/> */}
-      </View>
+      {/* <View style={styles.diaryStyle}>
+        <DiaryAndAI isRecording={isRecording}/>
+      </View> */}
     </View>
   );
 };

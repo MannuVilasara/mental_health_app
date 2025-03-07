@@ -9,19 +9,17 @@ import { AuthContext } from '../../context/authContext';
 const { width, height } = Dimensions.get('window');
 
 const WeeklyTest = () => {
-
-    //global
-    const [state] = useContext(AuthContext)
-    const {token} = state
-    const {user} = state
+    // Global
+    const [state] = useContext(AuthContext);
+    const { token } = state;
+    const { user } = state;
     const [selectedOptions, setSelectedOptions] = useState(Array(question.length).fill(null));
-    // const [result, setResult] = useState();
     const [level, setLevel] = useState('');
-    const [currentSlide, setCurrentSlide] = useState(0); 
+    const [currentSlide, setCurrentSlide] = useState(0);
     const scrollViewRef = useRef(null);
-    const [answers, setAnswers] = useState([])
+    const [answers, setAnswers] = useState([]);
 
-    const date = new Date()
+    const date = new Date();
 
     const handleOptionSelect = (questionIndex, optionIndex) => {
         const newSelectedOptions = [...selectedOptions];
@@ -29,41 +27,38 @@ const WeeklyTest = () => {
         setSelectedOptions(newSelectedOptions);
     };
 
-    const sendData=async()=>{
-        const data = {score: result, answers}
-        await fetch(`${url}/api/v1/weeklyTest/send`,{
-            method: "POST",
-            headers:{
+    const sendData = async () => {
+        const data = { score: result, answers };
+        await fetch(`${url}/api/v1/weeklyTest/send`, {
+            method: 'POST',
+            headers: {
                 Accept: 'application/json',
-                    'Content-Type': 'application/json',
+                'Content-Type': 'application/json',
                 Authorization: `Bearer ${token}`,
             },
             body: JSON.stringify(data),
-        }).then(response => {
+        }).then((response) => {
             if (!response.ok) {
-              throw new Error('Network response was not ok');
-            }
-            else{
-                updateDate()
+                throw new Error('Network response was not ok');
+            } else {
+                updateDate();
             }
             return response.json();
-        })
-    }
-    const updateDate=async()=>{
-        data = {lastTestDate: date}
-        await fetch(`${url}/api/v1/auth/update/${user._id}`,{
-            method: "PUT",
-            headers:{
+        });
+    };
+
+    const updateDate = async () => {
+        const data = { lastTestDate: date };
+        await fetch(`${url}/api/v1/auth/update/${user._id}`, {
+            method: 'PUT',
+            headers: {
                 Accept: 'application/json',
-                    'Content-Type': 'application/json',
+                'Content-Type': 'application/json',
                 Authorization: `Bearer ${token}`,
             },
-            body: JSON.stringify(data)
-        })
-    }
-    const getUserDetails=async()=>{
-        await fetch(`${url}/`)
-    }
+            body: JSON.stringify(data),
+        });
+    };
 
     let result = 0;
     let newArr = [];
@@ -74,11 +69,10 @@ const WeeklyTest = () => {
             }
         }
         if (newArr.length === 21) {
-            setAnswers(newArr)
+            setAnswers(newArr);
             for (let i = 0; i < 21; i++) {
                 result += newArr[i];
             }
-            // setResult(result);
             if (result >= 0 && result <= 10) {
                 setLevel('These Ups and downs considered normal');
             } else if (result >= 11 && result <= 16) {
@@ -92,7 +86,7 @@ const WeeklyTest = () => {
             } else if (result > 40) {
                 setLevel('Extreme depression');
             }
-            sendData()
+            sendData();
         } else {
             Alert.alert('Attempt all questions');
         }
@@ -115,14 +109,18 @@ const WeeklyTest = () => {
     return (
         <GestureScrollView>
             <View style={styles.container}>
-                <View style={{marginHorizontal:15}}>
-                <Text style={[styles.color_black, { fontSize: 17, fontWeight: '600', width: '50%', fontFamily:'Poppins-SemiBold' }]}>Weekly Test</Text>
-                <Text style={[styles.color_black, { fontSize: 15, fontWeight: '400', width: '50%', marginHorizontal:10 }]}>Test is Live</Text>
+                <View style={{ marginHorizontal: 15 }}>
+                    <Text style={[styles.color_black, { fontSize: 17, fontWeight: '600', width: '50%', fontFamily: 'Poppins-SemiBold' }]}>
+                        Weekly Test
+                    </Text>
+                    <Text style={[styles.color_black, { fontSize: 15, fontWeight: '400', width: '50%', marginHorizontal: 10 }]}>
+                        Test is Live
+                    </Text>
                 </View>
-                <ScrollView 
-                    horizontal 
-                    pagingEnabled 
-                    scrollEnabled={true} 
+                <ScrollView
+                    horizontal
+                    pagingEnabled
+                    scrollEnabled={true}
                     ref={scrollViewRef}
                     onScroll={(event) => {
                         const slideIndex = Math.round(event.nativeEvent.contentOffset.x / width);
@@ -134,29 +132,49 @@ const WeeklyTest = () => {
                         return (
                             <View style={styles.questionBox} key={questionIndex}>
                                 <View style={styles.question} key={questionIndex}>
-                                <TouchableOpacity onPress={() => handleOptionSelect(questionIndex, 0)}>
+                                    <TouchableOpacity onPress={() => handleOptionSelect(questionIndex, 0)}>
                                         <View style={{ flexDirection: 'row', margin: 5, alignItems: 'center' }}>
                                             <View style={styles.selectContainer}>
-                                                <View style={[styles.option, selectedOptions[questionIndex] === 0 && styles.selectedOption]} />
+                                                <View
+                                                    style={[
+                                                        styles.option,
+                                                        selectedOptions[questionIndex] === 0 && styles.selectedOption,
+                                                    ]}
+                                                />
                                             </View>
                                             <Text style={styles.optionText}>{item.o1}</Text>
                                         </View>
                                     </TouchableOpacity>
                                     <TouchableOpacity onPress={() => handleOptionSelect(questionIndex, 1)}>
                                         <View style={{ flexDirection: 'row', margin: 5, alignItems: 'center' }}>
-                                            <View style={[styles.option, selectedOptions[questionIndex] === 1 && styles.selectedOption]} />
+                                            <View
+                                                style={[
+                                                    styles.option,
+                                                    selectedOptions[questionIndex] === 1 && styles.selectedOption,
+                                                ]}
+                                            />
                                             <Text style={styles.optionText}>{item.o2}</Text>
                                         </View>
                                     </TouchableOpacity>
                                     <TouchableOpacity onPress={() => handleOptionSelect(questionIndex, 2)}>
                                         <View style={{ flexDirection: 'row', margin: 5, alignItems: 'center' }}>
-                                            <View style={[styles.option, selectedOptions[questionIndex] === 2 && styles.selectedOption]} />
+                                            <View
+                                                style={[
+                                                    styles.option,
+                                                    selectedOptions[questionIndex] === 2 && styles.selectedOption,
+                                                ]}
+                                            />
                                             <Text style={styles.optionText}>{item.o3}</Text>
                                         </View>
                                     </TouchableOpacity>
                                     <TouchableOpacity onPress={() => handleOptionSelect(questionIndex, 3)}>
                                         <View style={{ flexDirection: 'row', margin: 5, alignItems: 'center' }}>
-                                            <View style={[styles.option, selectedOptions[questionIndex] === 3 && styles.selectedOption]} />
+                                            <View
+                                                style={[
+                                                    styles.option,
+                                                    selectedOptions[questionIndex] === 3 && styles.selectedOption,
+                                                ]}
+                                            />
                                             <Text style={styles.optionText}>{item.o4}</Text>
                                         </View>
                                     </TouchableOpacity>
@@ -165,26 +183,51 @@ const WeeklyTest = () => {
                         );
                     })}
                 </ScrollView>
-                <Text style={[styles.color_black, { fontSize: 17, textAlign:'center' }]}>{currentSlide + 1} / {question.length}</Text>
-                {/* <Text style={[styles.color_black, { fontSize: 17, textAlign:'center' }]}>slide...</Text> */}
 
-                {/* <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 20 }}>
-                    <TouchableOpacity onPress={goToPreviousQuestion}>
-                        <View style={styles.button}><Text style={{ fontSize: 16 }}>Previous</Text></View>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={goToNextQuestion}>
-                        <View style={styles.button}><Text style={{ fontSize: 16 }}>Next</Text></View>
-                    </TouchableOpacity>
-                </View> */}
-                <View style={{alignItems:'center', margin: 8}}>
-                <TouchableOpacity onPress={calculateScore}>
-                    <View style={styles.button}><Text style={{ fontSize: 16 }}>Submit</Text></View>
-                </TouchableOpacity>
+                {/* Progress Bar */}
+                <View style={styles.progressContainer}>
+                    <Text style={[styles.color_black, { fontSize: 14, textAlign: 'center' }]}>
+                        Question {currentSlide + 1} of {question.length}
+                    </Text>
+                    <View style={styles.progressBar}>
+                        <View
+                            style={{
+                                width: `${((currentSlide + 1) / question.length) * 100}%`,
+                                height: 5,
+                                backgroundColor: 'rgba(111,145,103,0.9)',
+                                borderRadius: 5,
+                            }}
+                        />
+                    </View>
                 </View>
-                <View style={{marginHorizontal: 15}}>
-                {/* <Text style={[styles.color_black, { fontSize: 16, color: '#444444' }]}>Your Score: <Text style={{ fontWeight: '600' }}>{result}</Text></Text> */}
-                <Text style={[styles.color_black, { fontSize: 16, color: '#444444' }]}>Your level: <Text style={{ fontWeight: '600' }}>{level}</Text></Text>
-                <Text style={[styles.color_black, { fontSize: 16, color: '#444444' }]}>{"{Score is avalable in weekly reports section.}"}</Text>
+
+                {/* Navigation Buttons */}
+                <View style={styles.navigation}>
+                    <TouchableOpacity
+                        onPress={goToPreviousQuestion}
+                        style={[styles.button, currentSlide === 0 && styles.disabledButton]}
+                        disabled={currentSlide === 0}
+                    >
+                        <Text style={styles.buttonText}>Previous</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        onPress={currentSlide === question.length - 1 ? calculateScore : goToNextQuestion}
+                        style={[styles.button, currentSlide === question.length - 1 && selectedOptions.every(opt => opt !== null) && styles.submitButton]}
+                    >
+                        <Text style={styles.buttonText}>
+                            {currentSlide === question.length - 1 ? 'Submit' : 'Next'}
+                        </Text>
+                    </TouchableOpacity>
+                </View>
+
+                {/* Results */}
+                <View style={{ marginHorizontal: 15 }}>
+                    <Text style={[styles.color_black, { fontSize: 16, color: '#444444' }]}>
+                        Your level: <Text style={{ fontWeight: '600' }}>{level}</Text>
+                    </Text>
+                    <Text style={[styles.color_black, { fontSize: 16, color: '#444444' }]}>
+                        {"{Score is available in weekly reports section}"}
+                    </Text>
                 </View>
             </View>
             <Bottom />
@@ -192,21 +235,19 @@ const WeeklyTest = () => {
     );
 };
 
-export default WeeklyTest;
-
 const styles = StyleSheet.create({
     white_text: {
-        color: 'white'
+        color: 'white',
     },
     color_black: {
         color: '#444444',
-        fontFamily:'Poppins-Regular'
+        fontFamily: 'Poppins-Regular',
     },
     heading: {
         color: 'black',
         textAlign: 'center',
         fontSize: 20,
-        fontWeight: '400'
+        fontWeight: '400',
     },
     container: {
         marginTop: 15,
@@ -216,23 +257,21 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         borderRadius: 10,
         marginVertical: 10,
-        justifyContent:'space-around',
+        justifyContent: 'space-around',
         width: '95%',
         height: '95%',
     },
     questionBox: {
         width: width,
-        // backgroundColor:'orange',
         paddingHorizontal: 10,
-        // margin: 2,
         height: 280,
-        alignItems:'center'
+        alignItems: 'center',
     },
     questionText: {
         color: 'black',
         fontSize: 16,
         marginBottom: 10,
-        fontWeight: 'bold'
+        fontWeight: 'bold',
     },
     option: {
         height: 20,
@@ -245,17 +284,15 @@ const styles = StyleSheet.create({
     optionText: {
         fontSize: 16,
         color: '#444444',
-        // backgroundColor: 'yellow',
         width: '90%',
-        fontFamily:'Poppins-Regular'
+        fontFamily: 'Poppins-Regular',
     },
     selectedOption: {
         backgroundColor: 'rgba(111,145,103,0.9)',
-        borderColor: 'rgba(111,145,103,0.9)'
+        borderColor: 'rgba(111,145,103,0.9)',
     },
     selectContainer: {
-        // backgroundColor:'orange',
-        width: '10%'
+        width: '10%',
     },
     button: {
         backgroundColor: 'rgba(111,145,103,0.9)',
@@ -264,4 +301,34 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         borderRadius: 17,
     },
+    buttonText: {
+        fontSize: 16,
+        color: '#FFFFFF',
+        fontFamily: 'Poppins-Regular',
+    },
+    disabledButton: {
+        backgroundColor: '#B0B0B0',
+    },
+    submitButton: {
+        backgroundColor: 'rgba(111,145,103,1)', // Slightly darker for emphasis
+    },
+    progressContainer: {
+        alignItems: 'center',
+        marginVertical: 10,
+    },
+    progressBar: {
+        width: '80%',
+        height: 5,
+        backgroundColor: '#E0E0E0',
+        borderRadius: 5,
+        marginTop: 5,
+    },
+    navigation: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginHorizontal: 20,
+        marginBottom: 10,
+    },
 });
+
+export default WeeklyTest;

@@ -8,6 +8,7 @@ import DailyTasks from '../Daily_tasks';
 import DiaryAndAI from '../DiaryAndAI';
 import ProfilePageNavigator from '../ProfileNavigation/ProfilePageNavigator';
 import DailyDiary from '../DailyDiary';
+import ChatBot from '../../chatBot/ChatBot';
 
 const Tab = createBottomTabNavigator();
 
@@ -19,12 +20,12 @@ const AppNavigation = () => {
             headerShown: false,
             tabBarShowLabel: false,
             tabBarStyle: {
-              position: 'absolute',
-              bottom: 30,
-              left: 20,
-              right: 20,
-              height: 75,
-              borderRadius: 401,
+              position: route.name==='chatWithAI'?"relative":"absolute",
+              bottom: route.name==='chatWithAI'?0:30,
+              left: route.name==='chatWithAI'?0:20,
+              right: route.name==='chatWithAI'?0:20,
+              height: route.name==='chatWithAI'?60:75,
+              borderRadius: route.name==='chatWithAI'?20:401,
               // backgroundColor: '#8ca785',
               backgroundColor: 'rgba(140, 167, 133, 0.7)',
               elevation: 0,
@@ -43,6 +44,8 @@ const AppNavigation = () => {
                 iconName = focused ? 'user-alt' : 'user-alt';
               } else if (route.name === 'Diary') {
                 iconName = focused ? 'book' : 'book';
+              } else if(route.name == 'chatWithAI') {
+                iconName = focused ? 'robot' : 'robot'
               }
 
               // You can return any component that you like here!
@@ -64,6 +67,7 @@ const AppNavigation = () => {
           <Tab.Screen name="dailyTask" component={DailyTasks} />
           <Tab.Screen name="Diary" component={DailyDiary}/>
           <Tab.Screen name="MainProfile" component={ProfilePageNavigator} />
+          <Tab.Screen name="chatWithAI" component={ChatBot}/>
         </Tab.Navigator>
     </>
   )
