@@ -15,18 +15,18 @@ const TaskProvider = ({
     const [Loading, setLoading] = useState(false)
     const [tasks, setTasks] = useState([])
     const [state] = useContext(AuthContext);
-    const {token} = state;
+    const { token } = state;
 
 
     //get
     const getTasks = async () => {
         setLoading(false)
         try {
-            let result = await fetch('http://192.168.190.191:5000/api/v1/dailyTask/get', {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+            let result = await fetch(`http://${url}:5000/api/v1/dailyTask/get`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
             result = await result.json();
             if (result) {
                 setTasks(result?.dailyTasks);
@@ -44,9 +44,9 @@ const TaskProvider = ({
         getTasks()
     }, [])
 
-    return ( <TaskContext.Provider value = {[tasks, setTasks]}> 
-            {children} 
-        </TaskContext.Provider>
+    return (<TaskContext.Provider value={[tasks, setTasks]}>
+        {children}
+    </TaskContext.Provider>
     )
 }
 

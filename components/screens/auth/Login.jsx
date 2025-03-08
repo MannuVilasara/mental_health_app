@@ -1,4 +1,4 @@
-import React, {useState, useContext} from 'react';
+import React, { useState, useContext } from 'react';
 import {
   View,
   Text,
@@ -9,10 +9,11 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AuthContext } from '../../../context/authContext';
+import url from '../../../context/url';
 
 
-const Login = ({navigation}) => {
-    //global state
+const Login = ({ navigation }) => {
+  //global state
   const [state, setState] = useContext(AuthContext)
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -28,7 +29,7 @@ const Login = ({navigation}) => {
       }
 
       loginUser();
-      console.log(`Login Data: `, {email, password});
+      console.log(`Login Data: `, { email, password });
     } catch (error) {
       setLoading(false);
       console.log(error);
@@ -36,8 +37,8 @@ const Login = ({navigation}) => {
   };
 
   const loginUser = () => {
-    let data = {email, password};
-    fetch('http://192.168.190.191:5000/api/v1/auth/login', {
+    let data = { email, password };
+    fetch(`${url}/api/v1/auth/patient/login`, {
       method: 'POST',
       headers: {
         Accept: 'application/json',

@@ -4,8 +4,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ScrollView } from 'react-native-gesture-handler';
 import { AuthContext } from '../../context/authContext';
 import url from '../../context/url';
+import { Colors } from '../../ui/Colors';
+import Icon from 'react-native-vector-icons/Feather';
 
-const Mood = () => {
+const Mood = ({ navigation }) => {
   const [state] = useContext(AuthContext);
   const { token } = state;
 
@@ -35,21 +37,21 @@ const Mood = () => {
       },
       body: JSON.stringify(data),
     })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      return response.json();
-    })
-    .then(result => {
-      Alert.alert('Updated', `You are feeling ${feel}`);
-      updateStreak();
-      setFeelNumber(null);
-      setFeel('');
-    })
-    .catch(error => {
-      console.error('Error:', error);
-    });
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      })
+      .then(result => {
+        Alert.alert('Updated', `You are feeling ${feel}`);
+        updateStreak();
+        setFeelNumber(null);
+        setFeel('');
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
   };
 
   const updateStreak = async () => {
@@ -63,7 +65,7 @@ const Mood = () => {
       console.error('Error updating streak:', error);
     }
   };
-  
+
   const loadStreak = async () => {
     try {
       const savedStreak = await AsyncStorage.getItem('streak');
@@ -76,143 +78,156 @@ const Mood = () => {
       console.error('Error loading streak:', error);
     }
   };
-  
+
 
   return (
-    <View style={{ marginHorizontal: 15 }}>
+    <View>
       <StatusBar backgroundColor={'#ededed'} />
-      <View>
-        <View style={{ flexDirection: 'row', marginBottom: 20, marginTop: 10 }}>
-          <View style={{ width: '70%' }}>
-            <Text style={[styles.color_black, { fontSize: 20, fontWeight: 600, fontFamily: 'Poppins-SemiBold' }]}>
-              Hello {state?.user.name}
+      <View style={styles.moodContainer}>
+        <View style={styles.header}>
+          <View style={styles.userInfo}>
+            <Text style={styles.greeting}>
+              Hello, <Text style={styles.userName}>{state?.user.name}</Text>
             </Text>
-            <Text
-              style={[
-                styles.color_black,
-                { fontSize: 15, marginTop: 5, marginBottom: 5 },
-              ]}>
-              How are you feeling now?
-            </Text>
+            <Image style={styles.profileImage} source={require('../../img/icons/assets/LoginSignup/userProfile.png')} />
           </View>
-          <View
-            style={{
-              width: '30%',
-              justifyContent: 'center',
-              alignItems: 'flex-end',
-            }}>
-            <Image style={styles.image} source={require('../../img/icons/assets/LoginSignup/userProfile.png')} /> 
-            {/* <Text style={{backgroundColor:'rgba(111,145,103,0.7)', fontFamily:'Poppins-SemiBold', fontSize:19, borderRadius:150, height: 50, width: 50, textAlign:'center', textAlignVertical:'center', borderColor:'rgba(177, 252, 3,0.3)', borderWidth: 7}}>{streak}</Text>  */}
-          </View>
+
+          <TouchableOpacity
+            onPress={() => navigation?.navigate('chatWithAI')}
+            style={styles.chatButton}
+          >
+            <Icon name="message-circle" size={20} color={Colors.text.dark} style={styles.chatIcon} />
+            <Text style={styles.chatButtonText}>Chat with personal assistant...</Text>
+            <View style={styles.shareButton}>
+              <Text style={styles.shareButtonText}>Share</Text>
+            </View>
+          </TouchableOpacity>
         </View>
 
-        <View style={styles.emojiContainer}>
-          <TouchableOpacity onPress={() => { setFeel('sad'); setFeelNumber(0); handleClick(); }}>
-            <View style={styles.emojiBox}>
-              <Image
-                style={styles.emojis}
-                source={require('../../img/emoji/sad.png')}
-              />
-            </View>
-            <Text
-              style={[
-                styles.color_black,
-                styles.centerText,
-                { marginTop: 4, fontWeight: 600 },
-              ]}>
-              Sad
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity onPress={() => { setFeel('normal'); setFeelNumber(1); handleClick(); }}>
-            <View style={styles.emojiBox}>
-              <Image
-                style={styles.emojis}
-                source={require('../../img/emoji/smile.png')}
-              />
-            </View>
-            <Text
-              style={[
-                styles.color_black,
-                styles.centerText,
-                { marginTop: 4, fontWeight: 600 },
-              ]}>
-              Normal
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity onPress={() => { setFeel('happy'); setFeelNumber(2); handleClick(); }}>
-            <View style={styles.emojiBox}>
-              <Image
-                style={styles.emojis}
-                source={require('../../img/emoji/happy.png')}
-              />
-            </View>
-            <Text
-              style={[
-                styles.color_black,
-                styles.centerText,
-                { marginTop: 4, fontWeight: 600 },
-              ]}>
-              Happy
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity onPress={() => { setFeel('excited'); setFeelNumber(3); handleClick(); }}>
-            <View style={styles.emojiBox}>
-              <Image
-                style={styles.emojis}
-                source={require('../../img/emoji/excited.png')}
-              />
-            </View>
-            <Text
-              style={[
-                styles.color_black,
-                styles.centerText,
-                { marginTop: 4, fontWeight: 600 },
-              ]}>
-              Excited
-            </Text>
-          </TouchableOpacity>
+        <View style={styles.moodSection}>
+          <Text style={styles.moodTitle}>How are you feeling now?</Text>
+          <View style={styles.emojiContainer}>
+            {[
+              { feel: 'sad', emoji: require('../../img/emoji/sad.png') },
+              { feel: 'normal', emoji: require('../../img/emoji/smile.png') },
+              { feel: 'happy', emoji: require('../../img/emoji/happy.png') },
+              { feel: 'excited', emoji: require('../../img/emoji/excited.png') }
+            ].map((item, index) => (
+              <TouchableOpacity
+                key={item.feel}
+                onPress={() => {
+                  setFeel(item.feel);
+                  setFeelNumber(index);
+                  handleClick();
+                }}
+                style={styles.emojiButton}
+              >
+                <View style={[styles.emojiBox, feel === item.feel && styles.selectedEmojiBox]}>
+                  <Image style={styles.emoji} source={item.emoji} />
+                </View>
+                <Text style={styles.emojiText}>{item.feel}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
         </View>
       </View>
-    </View>
+    </View >
   );
 };
 
 export default Mood;
 
 const styles = StyleSheet.create({
-  color_black: {
-    fontFamily: 'Poppins-Medium',
-    color: '#444444',
+  moodContainer: {
+    backgroundColor: Colors.background.accent,
+    borderBottomLeftRadius: 25,
+    borderBottomRightRadius: 25,
+    padding: 20,
   },
-  centerText: {
-    textAlign: 'center',
+  header: {
+    gap: 20,
+  },
+  userInfo: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  greeting: {
+    fontSize: 20,
+    color: Colors.text.light,
+    fontFamily: 'Poppins-Regular',
+  },
+  userName: {
     fontFamily: 'Poppins-SemiBold',
-    color: '#444444',
   },
-  emojis: {
-    height: 35,
-    width: 35,
+  profileImage: {
+    height: 50,
+    width: 50,
+    borderRadius: 25,
+    borderWidth: 2,
+    borderColor: Colors.background.primary,
+  },
+  chatButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: Colors.background.tertiary,
+    padding: 12,
+    borderRadius: 25,
+    gap: 10,
+  },
+  chatButtonText: {
+    flex: 1,
+    color: Colors.text.dark,
+    fontFamily: 'Poppins-Regular',
+  },
+  shareButton: {
+    backgroundColor: Colors.background.accent,
+    paddingHorizontal: 15,
+    paddingVertical: 6,
+    borderRadius: 20,
+  },
+  shareButtonText: {
+    color: Colors.text.light,
+    fontFamily: 'Poppins-SemiBold',
+  },
+  moodSection: {
+    marginTop: 20,
+  },
+  moodTitle: {
+    fontSize: 18,
+    color: Colors.text.light,
+    fontFamily: 'Poppins-SemiBold',
+    marginBottom: 15,
   },
   emojiContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    marginTop: 10,
+  },
+  emojiButton: {
+    alignItems: 'center',
+    gap: 8,
   },
   emojiBox: {
-    height: 70,
-    width: 70,
-    backgroundColor: '#ededed',
-    borderRadius: 50,
+    height: 60,
+    width: 60,
+    backgroundColor: Colors.background.primary,
+    borderRadius: 30,
     justifyContent: 'center',
     alignItems: 'center',
+    elevation: 4,
   },
-  image: {
-    height: 50,
-    width: 50,
-    borderRadius: 50,
+  selectedEmojiBox: {
     borderWidth: 2,
-    borderColor:'rgba(177, 252, 3,0.3)', borderWidth: 7
+    borderColor: Colors.background.accent,
+  },
+  emoji: {
+    height: 35,
+    width: 35,
+  },
+  emojiText: {
+    color: Colors.text.light,
+    fontFamily: 'Poppins-SemiBold',
+    textTransform: 'capitalize',
   },
 });

@@ -6,19 +6,23 @@ import {
   Dimensions,
   TouchableOpacity,
 } from 'react-native';
-import React, {useState, useEffect, useContext} from 'react';
-import Icon from 'react-native-vector-icons/FontAwesome5';
-import {TaskContext} from '../../context/taskContext';
-import {AuthContext} from '../../context/authContext';
+import React, { useState, useEffect, useContext } from 'react';
+import Icon from 'react-native-vector-icons/Feather';
+import { TaskContext } from '../../context/taskContext';
+import { AuthContext } from '../../context/authContext';
 import url from '../../context/url';
+import PieChart from 'react-native-pie-chart';
+import Heading from '../../ui/Headings';
+import { Colors } from '../../ui/Colors';
+import { LinearGradient } from 'expo-linear-gradient';
 
-const {width} = Dimensions.get('screen');
+const { width } = Dimensions.get('screen');
 
 const UpcomingTasks = () => {
   //global
   const [tasks] = useContext(TaskContext);
   const [state] = useContext(AuthContext);
-  const {token} = state;
+  const { token } = state;
 
   const [loadItems, setLoadItems] = useState([]);
   const [currentTimeIndex, setCurrentTimeIndex] = useState(15); // Default value
@@ -68,32 +72,29 @@ const UpcomingTasks = () => {
     }
   };
 
-  console.log(currentTimeIndex);
+  // Task category icons mapping
+  const getCategoryIcon = (activity) => {
+    const lowerActivity = activity?.toLowerCase() || '';
+    if (lowerActivity.includes('study') || lowerActivity.includes('read')) return 'book';
+    if (lowerActivity.includes('exercise') || lowerActivity.includes('gym')) return 'activity';
+    if (lowerActivity.includes('meeting') || lowerActivity.includes('call')) return 'users';
+    if (lowerActivity.includes('eat') || lowerActivity.includes('lunch') || lowerActivity.includes('dinner')) return 'coffee';
+    return 'calendar';
+  };
+
+  // Format time from index to readable format
+  const formatTime = (timeIndex) => {
+    const baseHour = 8.3 + timeIndex;
+    const hour = Math.floor(baseHour);
+    const minute = Math.round((baseHour - hour) * 60);
+    return `${hour}:${minute < 10 ? '0' + minute : minute}`;
+  };
+
   return (
-    <View style={{marginHorizontal: 15}}>
-      <View style={{marginTop: 40}}>
-        <View style={{flexDirection: 'row'}}>
-          <Text
-            style={[
-              styles.color_black,
-              {fontSize: 17, fontWeight: 600, width: '50%', fontFamily:'Poppins-SemiBold',},
-            ]}>
-            Upcoming Tasks
-          </Text>
-          <TouchableOpacity
-            style={{width: '50%'}}
-            onPress={() => {
-              getItems();
-            }}>
-            <Text
-              style={[
-                styles.color_black,
-                {fontSize: 17, width: '100%', textAlign: 'right', fontFamily:'Poppins-Regular'},
-              ]}>
-              Refresh
-            </Text>
-          </TouchableOpacity>
-        </View>
+    <View style={styles.container}>
+      <View>
+        <Heading title="Upcoming Tasks" onPress={getItems} buttonTitle="Refresh" />
+
         <View style={styles.boxContainer}>
           {loadItems
             .filter(
@@ -112,38 +113,30 @@ const UpcomingTasks = () => {
               )
               .slice(0, 4)
               .map((item, index) => (
-                <View
-                  key={index}
-                  style={[
-                    styles.boxes,
-                    {padding: 10, justifyContent: 'center'},
-                  ]}>
-                  <Text
-                    style={[
-                      styles.color_black,
-                      {fontWeight: 600, fontSize: 17, margin: 5},
-                    ]}>
-                    {item.newActivity}
-                  </Text>
-                  <Text
-                    style={[
-                      styles.color_black,
-                      {fontSize: 17, marginBottom: 5, marginLeft: 5},
-                    ]}>
-                    {(item.timeIndexValue + 8.3).toFixed(2)}
-                  </Text>
+                <View key={index} style={styles.taskCard}>
+                  <View style={styles.iconContainer}>
+                    <Icon name={getCategoryIcon(item.newActivity)} size={20} color={Colors.text.accent} />
+                  </View>
+                  <View style={styles.taskContent}>
+                    <Text style={styles.taskTitle} numberOfLines={1}>{item.newActivity}</Text>
+                    <View style={styles.timeContainer}>
+                      <Icon name="clock" size={14} color={Colors.text.accent} />
+                      <Text style={styles.timeText}>
+                        {formatTime(item.timeIndexValue)}
+                      </Text>
+                    </View>
+                  </View>
                 </View>
               ))
           ) : (
-            <View
-              style={[styles.boxes, {padding: 10, justifyContent: 'center'}]}>
-              <Text
-                style={[
-                  styles.color_black,
-                  {fontSize: 17, marginBottom: 5, marginLeft: 5, fontFamily:'Poppins-Regular'},
-                ]}>
-                No upcoming tasks
+            <View style={styles.emptyContainer}>
+              <Icon name="calendar" size={32} color={Colors.background.accent} style={styles.emptyIcon} />
+              <Text style={styles.emptyText}>
+                No upcoming tasks for today
               </Text>
+              <TouchableOpacity style={styles.addButton} onPress={getItems}>
+                <Text style={styles.addButtonText}>Refresh</Text>
+              </TouchableOpacity>
             </View>
           )}
         </View>
@@ -157,31 +150,93 @@ export const getItems = UpcomingTasks.getItems; // Export getItems function
 export default UpcomingTasks;
 
 const styles = StyleSheet.create({
-  color_black: {
-    color: '#444444',
+  container: {
+    backgroundColor: Colors.background.primary,
+    margin: 16,
+    borderRadius: 20,
+    padding: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 3,
   },
   boxContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     flexWrap: 'wrap',
-  },
-  boxes: {
-    width: width / 2.4,
-    backgroundColor: 'white',
-    borderRadius: 10,
-    margin: 5,
+    width: '100%',
     marginTop: 10,
   },
-  taskImage: {
-    height: 30,
-    width: 30,
+  taskCard: {
+    width: '48%',
+    backgroundColor: Colors.background.tertiary,
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 5,
+    elevation: 2,
   },
-  emojiBox: {
-    height: 50,
-    width: 50,
-    backgroundColor: '#ededed',
-    borderRadius: 50,
+  iconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    backgroundColor: `${Colors.background.accent}15`,
     justifyContent: 'center',
     alignItems: 'center',
+    marginRight: 12,
+  },
+  taskContent: {
+    flex: 1,
+  },
+  taskTitle: {
+    fontSize: 14,
+    color: Colors.text.dark,
+    fontFamily: 'Poppins-SemiBold',
+    marginBottom: 4,
+  },
+  timeContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  timeText: {
+    fontSize: 12,
+    color: Colors.text.accent,
+    fontFamily: 'Poppins-Medium',
+  },
+  emptyContainer: {
+    width: '100%',
+    backgroundColor: Colors.background.tertiary,
+    borderRadius: 16,
+    padding: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  emptyIcon: {
+    marginBottom: 12,
+  },
+  emptyText: {
+    color: Colors.text.dark,
+    fontSize: 16,
+    fontFamily: 'Poppins-Medium',
+    textAlign: 'center',
+    marginBottom: 16,
+  },
+  addButton: {
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    backgroundColor: `${Colors.background.accent}20`,
+    borderRadius: 8,
+  },
+  addButtonText: {
+    color: Colors.text.accent,
+    fontFamily: 'Poppins-Medium',
+    fontSize: 14,
   },
 });

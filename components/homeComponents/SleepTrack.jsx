@@ -5,6 +5,7 @@ import Icon from 'react-native-vector-icons/Feather';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { AuthContext } from '../../context/authContext';
 import url from '../../context/url';
+import { Colors } from '../../ui/Colors';
 
 const SleepTrack = () => {
   const [state] = useContext(AuthContext);
@@ -23,7 +24,7 @@ const SleepTrack = () => {
   useEffect(() => {
     const calculateSleepMetrics = () => {
       let diffMs;
-      
+
       // If wakeTime is earlier than bedTime, assume it's the next day
       if (wakeTime.getTime() < bedTime.getTime()) {
         diffMs = ((wakeTime.getTime() + 24 * 60 * 60 * 1000) - bedTime.getTime());
@@ -116,7 +117,7 @@ const SleepTrack = () => {
     }).start();
   };
 
-  const formatTime = (date) => 
+  const formatTime = (date) =>
     date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
   return (
@@ -158,7 +159,7 @@ const SleepTrack = () => {
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
         >
-          <Animated.View 
+          <Animated.View
             style={[
               styles.arrow,
               {
@@ -181,7 +182,7 @@ const SleepTrack = () => {
         <View style={styles.statsContainer}>
           <StatItem label="Duration" value={`${sleepStats.hours}h ${sleepStats.minutes}m`} />
           <StatItem label="Score" value={sleepStats.score.toFixed(1)} />
-          <TouchableOpacity 
+          <TouchableOpacity
             style={[styles.saveButton, isSaving && styles.saveButtonDisabled]}
             onPress={saveSleepData}
             disabled={isSaving}
@@ -237,10 +238,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 15,
-    backgroundColor: '#F8F9FB',
+    // backgroundColor: Colors.background.primary,
     borderRadius: 15,
-    margin: 10,
-    elevation: 4,
+    marginTop: 20,
+    // margin: 10,
+    // elevation: 4,
   },
 
   // Header Styles
@@ -253,7 +255,7 @@ const styles = StyleSheet.create({
     borderBottomColor: 'rgba(0,0,0,0.05)',
   },
   title: {
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: '700',
     color: '#333333',
     fontFamily: 'Poppins-Bold',
