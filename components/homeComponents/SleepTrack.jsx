@@ -22,13 +22,19 @@ const SleepTrack = () => {
   // Calculate sleep metrics
   useEffect(() => {
     const calculateSleepMetrics = () => {
-      const diffMs = wakeTime.getTime() < bedTime.getTime()
-        ? (wakeTime.getTime() + 86400000) - bedTime.getTime()
-        : wakeTime.getTime() - bedTime.getTime();
+      let diffMs;
+      
+      // If wakeTime is earlier than bedTime, assume it's the next day
+      if (wakeTime.getTime() < bedTime.getTime()) {
+        diffMs = ((wakeTime.getTime() + 24 * 60 * 60 * 1000) - bedTime.getTime());
+      } else {
+        diffMs = wakeTime.getTime() - bedTime.getTime();
+      }
 
-      const hours = Math.floor(diffMs / (1000 * 60 * 60));
-      const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
-      const totalMinutes = hours * 60 + minutes;
+      const totalMinutes = Math.floor(diffMs / (1000 * 60));
+      const hours = Math.floor(totalMinutes / 60);
+      const minutes = totalMinutes % 60;
+      // Score calculation: 0-10 scale, where 5 hours (300 min) is minimum, 8 hours (480 min) is optimal
       const score = Math.min(10, Math.max(0, ((totalMinutes - 300) / 180) * 10));
 
       setSleepStats({ hours, minutes, score });
@@ -47,6 +53,10 @@ const SleepTrack = () => {
   const saveSleepData = async () => {
     setIsSaving(true);
     try {
+      const diffMs = wakeTime.getTime() < bedTime.getTime()
+        ? (wakeTime.getTime() + 24 * 60 * 60 * 1000) - bedTime.getTime()
+        : wakeTime.getTime() - bedTime.getTime();
+
       const response = await fetch(`${url}/api/v1/sleep/send`, {
         method: 'POST',
         headers: {
@@ -57,7 +67,7 @@ const SleepTrack = () => {
         body: JSON.stringify({
           bedTime,
           wakeTime,
-          differenceInMill: Math.abs(wakeTime.getTime() - bedTime.getTime()),
+          differenceInMill: diffMs,
         }),
       });
 
@@ -221,6 +231,7 @@ const StatItem = ({ label, value }) => (
     <Text style={styles.statValue}>{value}</Text>
   </View>
 );
+
 const styles = StyleSheet.create({
   // Base Container
   container: {
@@ -332,7 +343,7 @@ const styles = StyleSheet.create({
   },
 
   statsContainer: {
-    backgroundColor: '#F8F9FB', // Matches main container
+    backgroundColor: '#F8F9FB',
     borderRadius: 12,
     padding: 15,
     marginTop: 10,

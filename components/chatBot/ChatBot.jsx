@@ -1,15 +1,16 @@
-import React, { useEffect, useState } from 'react';
-import { 
-  Button, 
-  ScrollView, 
-  StyleSheet, 
-  Text, 
-  TextInput, 
-  View, 
+import React, { useContext, useEffect, useState, useRef } from 'react';
+import {
+  Button,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
   ActivityIndicator,
   KeyboardAvoidingView,
-  Platform
+  Platform,
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function ChatBot() {
   const [chat, setChat] = useState([
@@ -18,11 +19,31 @@ export default function ChatBot() {
   const [text, setText] = useState('');
   const [socket, setSocket] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const scrollViewRef = React.useRef();
+  const [callForWaiting, setCallForWaiting] = useState(false);
+  const [user, setUser] = useState(null); 
+  const scrollViewRef = useRef();
 
+  // Fetch user data from AsyncStorage on mount
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const userData = await AsyncStorage.getItem('@auth');
+        if (userData) {
+          const parsedUser = JSON.parse(userData); // Parse the JSON string
+          setUser(parsedUser);
+        }
+      } catch (error) {
+        console.error('Error fetching user from AsyncStorage:', error);
+      }
+    };
+
+    fetchUser();
+  }, []);
+
+  // WebSocket setup
   useEffect(() => {
     const ws = new WebSocket('ws://192.168.86.191:5000');
-    
+
     ws.onopen = () => {
       setSocket(ws);
       setIsLoading(false);
@@ -30,8 +51,9 @@ export default function ChatBot() {
 
     ws.onmessage = (e) => {
       try {
-        const data = e.data;
-        const botMessage = { sender: 'bot', message: data.toString() };
+        const data = JSON.parse(e.data);
+        setCallForWaiting(data.waitingRequired);
+        const botMessage = { sender: 'bot', message: data.message.toString() };
         setChat((prev) => [...prev, botMessage]);
         setIsLoading(false);
       } catch (error) {
@@ -61,16 +83,16 @@ export default function ChatBot() {
 
     setIsLoading(true);
     const userMessage = { sender: 'user', message: text };
-    socket.send(text);
+    socket.send(JSON.stringify({message: text, _id: user.user._id}));
     setChat((prev) => [...prev, userMessage]);
     setText('');
-    
+
     // Auto-scroll to bottom
     scrollViewRef.current?.scrollToEnd({ animated: true });
   };
 
   return (
-    <KeyboardAvoidingView 
+    <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={styles.container}
     >
@@ -79,22 +101,23 @@ export default function ChatBot() {
         {isLoading && <ActivityIndicator size="small" color="#666" />}
       </View>
 
-      <ScrollView 
+      <ScrollView
         style={styles.chatContainer}
         ref={scrollViewRef}
         contentContainerStyle={styles.chatContent}
       >
         {chat.map((data, id) => (
-          <View 
-            key={id} 
+          <View
+            key={id}
             style={[
               styles.messageBubble,
-              data.sender === 'bot' ? styles.botMessage : styles.userMessage
+              data.sender === 'bot' ? styles.botMessage : styles.userMessage,
             ]}
           >
             <Text style={styles.messageText}>{data.message}</Text>
           </View>
         ))}
+        {callForWaiting && <Text>Please wait...</Text>}
       </ScrollView>
 
       <View style={styles.inputContainer}>
@@ -107,8 +130,8 @@ export default function ChatBot() {
           multiline
           onSubmitEditing={sendMessage}
         />
-        <Button 
-          title="Send" 
+        <Button
+          title="Send"
           onPress={sendMessage}
           disabled={isLoading || !text.trim()}
           color="#007AFF"
