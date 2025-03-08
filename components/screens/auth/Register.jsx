@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -7,8 +7,9 @@ import {
   StyleSheet,
   Alert,
 } from 'react-native';
+import url from '../../../context/url';
 
-const Register = ({navigation}) => {
+const Register = ({ navigation }) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -24,7 +25,7 @@ const Register = ({navigation}) => {
       }
       setLoading(false);
       registerUser()
-      console.log(`Register Data: `, {name, email, password});
+      console.log(`Register Data: `, { name, email, password });
     } catch (error) {
       setLoading(false);
       console.log(error);
@@ -33,7 +34,7 @@ const Register = ({navigation}) => {
 
   const registerUser = () => {
     let data = { name, email, password };
-    fetch('http://192.168.190.191:5000/api/v1/auth/register', {
+    fetch(`${url}/api/v1/auth/register`, {
       method: 'POST',
       headers: {
         Accept: 'application/json',
@@ -41,25 +42,25 @@ const Register = ({navigation}) => {
       },
       body: JSON.stringify(data),
     })
-    .then(response => {
-      if (response.ok) {
-        // Registration successful, navigate to login page
-        navigation.navigate("Login");
-      } else {
-        // Registration failed, show error message from server
-        response.json().then(data => {
-          Alert.alert('Registration failed', data.message);
-        });
-      }
-    })
-    .catch(error => {
-      // Network error or other issues
-      console.error('Error during registration:', error);
-      Alert.alert('Registration failed', 'Please check your network connection and try again.');
-    });
+      .then(response => {
+        if (response.ok) {
+          // Registration successful, navigate to login page
+          navigation.navigate("Login");
+        } else {
+          // Registration failed, show error message from server
+          response.json().then(data => {
+            Alert.alert('Registration failed', data.message);
+          });
+        }
+      })
+      .catch(error => {
+        // Network error or other issues
+        console.error('Error during registration:', error);
+        Alert.alert('Registration failed', 'Please check your network connection and try again.');
+      });
   };
-  
-  
+
+
 
   return (
     <View style={styles.container}>
