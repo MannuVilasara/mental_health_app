@@ -16,6 +16,7 @@ const Tab = createBottomTabNavigator();
 const AppNavigation = ({ navigation }) => {
   return (
     <>
+
       <Tab.Navigator
         screenOptions={({ route }) => ({
           headerShown: false,
@@ -69,7 +70,7 @@ const AppNavigation = ({ navigation }) => {
         <Tab.Screen name="dailyTask" component={DailyTasks} />
         <Tab.Screen name="Diary" component={DailyDiary} />
         <Tab.Screen name="MainProfile" component={ProfilePageNavigator} />
-        <Tab.Screen name="chatWithAI" component={ChatBot} options={
+        {/* <Tab.Screen name="chatWithAI" component={ChatBot} options={
           {
             headerShown: true,
 
@@ -90,7 +91,7 @@ const AppNavigation = ({ navigation }) => {
               </TouchableOpacity>
             )
           }
-        } />
+        } /> */}
       </Tab.Navigator>
     </>
   )

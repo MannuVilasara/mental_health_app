@@ -1,60 +1,114 @@
-import React, {useContext, useState} from 'react';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {NavigationContainer} from '@react-navigation/native';
-import {StyleSheet} from 'react-native';
-import Login from '../auth/Login';
-import {createStackNavigator, TransitionPresets} from '@react-navigation/stack';
-import AppNavigation from './AppNavigation';
-import Register from '../auth/Register';
-import {AuthProvider} from '../../../context/authContext';
-import {AuthContext} from '../../../context/authContext';
+import React, { useContext } from 'react';
+import { createStackNavigator } from '@react-navigation/stack';
+import { StyleSheet, TouchableOpacity, View, Text, Alert } from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome5';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import { AuthContext } from '../../../context/authContext';
 import WelcomeScreen from '../auth/Screens/WelcomeScreen';
 import LoginScreen from '../auth/Screens/LoginScreen';
 import SignupScreen from '../auth/Screens/SignupScreen';
 import SecondSignup from '../auth/Screens/SecondSignup';
-import WeeklyTest from '../../WeeklyTest/WeeklyTest';
+import AppNavigation from './AppNavigation';
 import DoctorNavigation from './DoctorNavigation';
+import ChatBot from '../../chatBot/ChatBot';
 
 const Stack = createStackNavigator();
 
 const RootNavigation = () => {
-  //global state
   const [state] = useContext(AuthContext);
-  const {user} = state
-  //auth condition is true?
+  const { user } = state;
   const authenticateUser = state?.user && state?.token;
-  console.log(authenticateUser);
+  console.log('Authenticated:', authenticateUser);
 
-  const mainApp = user?.role?DoctorNavigation:AppNavigation
+  const MainApp = user?.role === 'doctor' ? DoctorNavigation : AppNavigation;
 
   return (
-    <>
-      <NavigationContainer>
-        <Stack.Navigator
-          screenOptions={{
-            headerShown: true,
-            gestureEnabled: true,
-            // ...TransitionPresets.SlideFromRightIOS, // This will make the transition from right to left
-          }}>
-          {authenticateUser ? (
-            <Stack.Group>
-              <Stack.Screen
-                name="MainApp"
-                component={mainApp}
-                options={{headerShown: false}}
-              />
-            </Stack.Group>
-          ) : (
-            <Stack.Group>
-              <Stack.Screen name="Welcome" component={WelcomeScreen} options={{headerShown: false}}/>
-              <Stack.Screen name="Login" component={LoginScreen} options={{headerShown: false}}/>
-              <Stack.Screen name="SignUp" component={SignupScreen} options={{headerShown: false}}/>
-              <Stack.Screen name="SecondSignup" component={SecondSignup} options={{headerShown: false}}/>
-            </Stack.Group>
-          )}
-        </Stack.Navigator>
-      </NavigationContainer>
-    </>
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: true,
+        gestureEnabled: true,
+      }}
+    >
+      {authenticateUser ? (
+        <Stack.Group>
+          <Stack.Screen
+            name="MainApp"
+            component={MainApp}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="chatWithAI"
+            component={ChatBot}
+            options={({ navigation }) => ({
+              headerShown: true,
+              headerTitle: () => (
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    gap: 10,
+                    marginLeft: -10,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 18,
+                      fontFamily: 'Poppins-medium',
+                      fontWeight: 'bold',
+                      color: 'black',
+                    }}
+                  >
+                    AI Assistant
+                  </Text>
+                  <MaterialIcons name="assistant" size={25} color="black" />
+                </View>
+              ),
+              headerLeft: () => (
+                <TouchableOpacity
+                  style={styles.iconBackground}
+                  onPress={() => {
+                    if (!navigation) {
+                      Alert.alert('Error', 'Navigation is not available');
+                      return;
+                    }
+                    if (user?.role === 'doctor') {
+                      navigation.navigate('MainApp', { screen: 'DoctorHome' });
+                    } else {
+                      navigation.navigate('MainApp', { screen: 'Home' });
+                    }
+                  }}
+                >
+                  <Icon name="arrow-left" size={20} color="black" />
+                </TouchableOpacity>
+              ),
+            })}
+          />
+        </Stack.Group>
+      ) : (
+        <Stack.Group>
+          <Stack.Screen
+            name="Welcome"
+            component={WelcomeScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Login"
+            component={LoginScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="SignUp"
+            component={SignupScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="SecondSignup"
+            component={SecondSignup}
+            options={{ headerShown: false }}
+          />
+        </Stack.Group>
+      )}
+    </Stack.Navigator>
   );
 };
 
