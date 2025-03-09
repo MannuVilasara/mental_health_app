@@ -1,177 +1,226 @@
-import {StyleSheet, Text, View} from 'react-native';
-import React, { useContext } from 'react';
-import {Image} from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome6';
-import Icon1 from 'react-native-vector-icons/Ionicons';
-import Icon2 from 'react-native-vector-icons/MaterialCommunityIcons';
-import Icon3 from 'react-native-vector-icons/Fontisto';
+"use client"
 
-import { AuthContext } from '../../context/authContext';
-
+import { StyleSheet, Text, View, ScrollView } from "react-native"
+import { useContext } from "react"
+import { Image } from "react-native"
+import Icon from "react-native-vector-icons/FontAwesome6"
+import Icon1 from "react-native-vector-icons/Ionicons"
+import Icon2 from "react-native-vector-icons/MaterialCommunityIcons"
+import Icon3 from "react-native-vector-icons/Fontisto"
+import { AuthContext } from "../../context/authContext"
+import { Colors } from "../../ui/Colors"
 
 const ProfileData = () => {
-  //global state
+  // global state
   const [state] = useContext(AuthContext)
+
+  const profileItems = [
+    {
+      icon: "user",
+      iconLib: Icon,
+      label: "Name",
+      value: state?.user.name,
+      color: "#4F46E5",
+    },
+    {
+      icon: "email",
+      iconLib: Icon2,
+      label: "Email",
+      value: state?.user.email,
+      color: "#0EA5E9",
+    },
+    {
+      icon: state?.user.gender === "Male" ? "male" : "female",
+      iconLib: Icon3,
+      label: "Gender",
+      value: state?.user.gender,
+      color: "#EC4899",
+    },
+    {
+      icon: "hourglass-half",
+      iconLib: Icon,
+      label: "Age",
+      value: state?.user.age,
+      color: "#F59E0B",
+    },
+    {
+      icon: "call",
+      iconLib: Icon1,
+      label: "Mobile no.",
+      value: state?.user.mobile,
+      color: "#10B981",
+    },
+    {
+      icon: "location-sharp",
+      iconLib: Icon1,
+      label: "Address",
+      value: state?.user.address,
+      color: "#6366F1",
+    },
+  ]
+
   return (
-    <View>
-      <View style={styles.profileBox}>
-        <View>
-          <View style={styles.imageView}>
-            <Image
-              source={require('../../img/icons/assets/LoginSignup/userProfile.png')}
-              style={styles.image}
-            />
+    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+      <View
+        style={styles.headerGradient}
+      >
+        <View style={styles.profileHeader}>
+          <View style={styles.avatarContainer}>
+            <Image source={require("../../img/icons/assets/LoginSignup/userProfile.png")} style={styles.avatar} />
+            <View style={styles.avatarRing} />
           </View>
-          <Text
-            style={[
-              styles.color_white,
-              {fontSize: 18, textAlign: 'center', fontWeight: '600'},
-            ]}>
-            {state?.user.name}
-          </Text>
-          <Text
-            style={[styles.color_white, {fontSize: 16, textAlign: 'center'}]}>
-            {state?.user.occupation}
-          </Text>
+
+          <Text style={styles.userName}>{state?.user.name}</Text>
+
+          <View style={styles.occupationContainer}>
+            <Icon2 name="briefcase-outline" size={16} color="#FFFFFF" style={{ marginRight: 6 }} />
+            <Text style={styles.occupation}>{state?.user.occupation || "Not specified"}</Text>
+          </View>
         </View>
       </View>
 
-      <View style={styles.detailBox}>
-        <View style={styles.itemBox}>
-          <View style={{flexDirection: 'row', width:'32%'}}>
-            <Icon
-              name="user"
-              color={'black'}
-              size={17}
-              style={styles.frontIconStyle}
-            />
-            <Text style={styles.text}>Name:</Text>
-          </View>
-          <Text style={styles.text2}>{state?.user.name}</Text>
-        </View>
+      <View style={styles.detailsCard}>
+        <Text style={styles.sectionTitle}>Personal Information</Text>
 
-        <View style={styles.itemBox}>
-        <View style={{flexDirection: 'row', width:'32%'}}>
-          <Icon2
-            name="email"
-            color={'black'}
-            size={17}
-            style={styles.frontIconStyle}
-          />
-          <Text style={styles.text}>Email:</Text>
-          </View>
-          <Text style={styles.text2}>{state?.user.email}</Text>
-        </View>
-        
-        <View style={styles.itemBox}>
-          <View style={{flexDirection: 'row', width:'32%'}}>
-          <Icon3
-            name={state?.user.gender=="Male"?'male':'female'}
-            color={'black'}
-            size={17}
-            style={styles.frontIconStyle}
-          />
-          <Text style={styles.text}>Gender</Text>
-          </View>
-          <Text style={styles.text2}>{state?.user.gender}</Text>
-        </View>
+        {profileItems.map((item, index) => (
+          <View key={index} style={[styles.infoItem, index === profileItems.length - 1 && styles.lastItem]}>
+            <View style={[styles.iconContainer, { backgroundColor: `${item.color}15` }]}>
+              <item.iconLib name={item.icon} size={18} color={item.color} />
+            </View>
 
-        <View style={styles.itemBox}>
-          <View style={{flexDirection: 'row', width:'32%'}}>
-          <Icon
-            name={"hourglass-half"}
-            color={'black'}
-            size={17}
-            style={styles.frontIconStyle}
-          />
-          <Text style={styles.text}>Age</Text>
+            <View style={styles.infoContent}>
+              <Text style={styles.infoLabel}>{item.label}</Text>
+              <Text style={styles.infoValue}>{item.value || "Not provided"}</Text>
+            </View>
           </View>
-          <Text style={styles.text2}>{state?.user.age}</Text>
-        </View>
+        ))}
 
-        <View style={styles.itemBox}>
-          <View style={{flexDirection: 'row', width:'32%'}}>
-          <Icon1
-            name="call"
-            color={'black'}
-            size={17}
-            style={styles.frontIconStyle}
-          />
-          <Text style={styles.text}>Mobile no.:</Text>
-          </View>
-          <Text style={styles.text2}>{state?.user.mobile}</Text>
-        </View>
 
-        <View style={styles.itemBox}>
-          <View style={{flexDirection: 'row', width:'32%'}}>
-          <Icon1
-            name="location-sharp"
-            color={'black'}
-            size={17}
-            style={styles.frontIconStyle}
-          />
-          <Text style={styles.text}>Address:</Text>
-          </View>
-          <Text style={styles.text2}>{state?.user.address}</Text>
-        </View>
       </View>
-    </View>
-  );
-};
+      <View style={{
+        height: 200,
+      }}></View>
+    </ScrollView>
+  )
+}
 
-export default ProfileData;
+export default ProfileData
 
 const styles = StyleSheet.create({
-  color_black: {
-    color: 'black',
+  container: {
+    flex: 1,
+    backgroundColor: "#F9FAFB",
   },
-  color_white: {
-    color: 'white',
+  headerGradient: {
+    borderBottomLeftRadius: 30,
+    borderBottomRightRadius: 30,
+    paddingTop: 40,
+    backgroundColor: Colors.background.accent,
+    paddingBottom: 30,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 10,
+    },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    elevation: 10,
   },
-  profileBox: {
-    backgroundColor: 'rgba(111,145,103,0.8)',
-    // height: '70%',
-    width: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 15,
+  profileHeader: {
+    alignItems: "center",
+    paddingHorizontal: 20,
   },
-  imageView: {
-    // backgroundColor:'green',
-    alignItems: 'center',
-    justifyContent: 'center',
-    // width: '20%',
-    margin: 15,
+  avatarContainer: {
+    position: "relative",
+    marginBottom: 16,
   },
-  image: {
-    height: 100,
-    width: 100,
-    borderRadius: 50,
-    borderColor: 'white',
+  avatar: {
+    height: 110,
+    width: 110,
+    borderRadius: 55,
+    borderColor: "white",
+    borderWidth: 4,
+  },
+  avatarRing: {
+    position: "absolute",
+    height: 126,
+    width: 126,
+    borderRadius: 63,
+    borderColor: "rgba(255, 255, 255, 0.3)",
     borderWidth: 2,
+    top: -8,
+    left: -8,
   },
-  text: {
-    color: 'black',
-    fontWeight: '600',
-    fontSize: 17,
+  userName: {
+    fontSize: 24,
+    fontWeight: "700",
+    color: "white",
+    marginBottom: 6,
   },
-  text2: {
-    color: 'black',
-    fontWeight: '400',
-    fontSize: 17,
-    // backgroundColor:'green',
-    width:'70%'
+  occupationContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "rgba(255, 255, 255, 0.2)",
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
   },
-  detailBox: {
-    margin: 10,
+  occupation: {
+    fontSize: 14,
+    color: "white",
+    fontWeight: "500",
   },
-  frontIconStyle: {
-    verticalAlign: 'middle',
-    width: 20,
+  detailsCard: {
+    backgroundColor: "white",
+    borderRadius: 20,
+    margin: 16,
+    padding: 20,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 4,
   },
-  itemBox:{
-    flexDirection: 'row',
-    marginHorizontal:5,
-    marginVertical:15
-  }
-});
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#111827",
+    marginBottom: 20,
+  },
+  infoItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: "#F3F4F6",
+  },
+  lastItem: {
+    borderBottomWidth: 0,
+    paddingBottom: 0,
+  },
+  iconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 16,
+  },
+  infoContent: {
+    flex: 1,
+  },
+  infoLabel: {
+    fontSize: 14,
+    color: "#6B7280",
+    marginBottom: 4,
+  },
+  infoValue: {
+    fontSize: 16,
+    fontWeight: "500",
+    color: "#111827",
+  },
+})
+

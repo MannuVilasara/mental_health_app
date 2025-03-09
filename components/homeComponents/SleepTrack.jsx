@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Animated, Alert } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/Feather';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { AuthContext } from '../../context/authContext';
@@ -12,51 +11,105 @@ const SleepTrack = () => {
   const { token } = state;
 
   // State Management
-  const [bedTime, setBedTime] = useState(new Date());
-  const [wakeTime, setWakeTime] = useState(new Date());
+  const [bedTime, setBedTime] = useState(null);
+  const [wakeTime, setWakeTime] = useState(null);
   const [showBedPicker, setShowBedPicker] = useState(false);
   const [showWakePicker, setShowWakePicker] = useState(false);
   const [sleepStats, setSleepStats] = useState({ hours: 0, minutes: 0, score: 0 });
-  const [arrowAnim] = useState(new Animated.Value(0));
+  const [scaleAnim] = useState(new Animated.Value(1)); // Always visible
   const [isSaving, setIsSaving] = useState(false);
+
+  // Debug function to help track state changes
+  useEffect(() => {
+    console.log('Sleep stats updated:', sleepStats);
+    console.log('Bed time:', bedTime);
+    console.log('Wake time:', wakeTime);
+  }, [sleepStats, bedTime, wakeTime]);
 
   // Calculate sleep metrics
   useEffect(() => {
     const calculateSleepMetrics = () => {
-      let diffMs;
-
-      // If wakeTime is earlier than bedTime, assume it's the next day
-      if (wakeTime.getTime() < bedTime.getTime()) {
-        diffMs = ((wakeTime.getTime() + 24 * 60 * 60 * 1000) - bedTime.getTime());
-      } else {
-        diffMs = wakeTime.getTime() - bedTime.getTime();
+      if (!bedTime || !wakeTime) {
+        setSleepStats({ hours: 0, minutes: 0, score: 0 });
+        return;
       }
+
+      // Get time difference in milliseconds, handling overnight sleep
+      let bedTimeMs = bedTime.getTime();
+      let wakeTimeMs = wakeTime.getTime();
+
+      // If wake time is earlier than bed time, add a day to wake time
+      if (wakeTimeMs < bedTimeMs) {
+        wakeTimeMs += 24 * 60 * 60 * 1000;
+      }
+
+      let diffMs = wakeTimeMs - bedTimeMs;
 
       const totalMinutes = Math.floor(diffMs / (1000 * 60));
       const hours = Math.floor(totalMinutes / 60);
       const minutes = totalMinutes % 60;
-      // Score calculation: 0-10 scale, where 5 hours (300 min) is minimum, 8 hours (480 min) is optimal
-      const score = Math.min(10, Math.max(0, ((totalMinutes - 300) / 180) * 10));
 
-      setSleepStats({ hours, minutes, score });
+      // Calculate sleep score - values between 0 and 10
+      // Optimal sleep is around 7-9 hours (420-540 minutes)
+      // Adjust formula based on your preferred sleep duration
+      let score;
+      if (totalMinutes < 300) { // Less than 5 hours
+        score = (totalMinutes / 300) * 5; // Max 5 points for less than ideal
+      } else if (totalMinutes <= 540) { // 5-9 hours (ideal range)
+        score = 5 + ((totalMinutes - 300) / 240) * 5; // 5-10 points for ideal range
+      } else { // More than 9 hours
+        score = 10 - ((totalMinutes - 540) / 180); // Decrease for oversleeping
+      }
 
-      Animated.timing(arrowAnim, {
-        toValue: Math.min((score / 10) * 90, 90),
-        duration: 500,
-        useNativeDriver: false,
-      }).start();
+      // Ensure score is between 0 and 10
+      score = Math.min(10, Math.max(0, score));
+
+      // Update state with new values
+      setSleepStats({
+        hours,
+        minutes,
+        score
+      });
+
+      // Animate for visual feedback
+      Animated.sequence([
+        Animated.timing(scaleAnim, {
+          toValue: 0.9,
+          duration: 150,
+          useNativeDriver: true
+        }),
+        Animated.timing(scaleAnim, {
+          toValue: 1,
+          duration: 150,
+          useNativeDriver: true
+        })
+      ]).start();
     };
 
-    if (bedTime && wakeTime) calculateSleepMetrics();
-  }, [bedTime, wakeTime, arrowAnim]);
+    // Only calculate if both times are set
+    if (bedTime && wakeTime) {
+      calculateSleepMetrics();
+    }
+  }, [bedTime, wakeTime, scaleAnim]);
 
-  // API call to save sleep data
+  // API call
   const saveSleepData = async () => {
+    if (!bedTime || !wakeTime) {
+      Alert.alert('Error', 'Please set both bed and wake times.', [{ text: 'OK' }]);
+      return;
+    }
+
     setIsSaving(true);
     try {
-      const diffMs = wakeTime.getTime() < bedTime.getTime()
-        ? (wakeTime.getTime() + 24 * 60 * 60 * 1000) - bedTime.getTime()
-        : wakeTime.getTime() - bedTime.getTime();
+      // Calculate time difference, handling overnight sleep
+      let bedTimeMs = bedTime.getTime();
+      let wakeTimeMs = wakeTime.getTime();
+
+      if (wakeTimeMs < bedTimeMs) {
+        wakeTimeMs += 24 * 60 * 60 * 1000;
+      }
+
+      const diffMs = wakeTimeMs - bedTimeMs;
 
       const response = await fetch(`${url}/api/v1/sleep/send`, {
         method: 'POST',
@@ -74,61 +127,76 @@ const SleepTrack = () => {
 
       if (response.ok) {
         resetTimes();
-        Alert.alert(
-          'Success',
-          'Sleep data saved successfully!',
-          [{ text: 'OK' }]
-        );
+        Alert.alert('Success', 'Sleep data saved!', [{ text: 'OK' }]);
       } else {
         throw new Error('Failed to save sleep data');
       }
     } catch (error) {
-      console.error('Error saving sleep data:', error);
-      Alert.alert(
-        'Error',
-        'Failed to save sleep data. Please try again.',
-        [{ text: 'OK' }]
-      );
+      console.error('Error:', error);
+      Alert.alert('Error', 'Failed to save. Try again.', [{ text: 'OK' }]);
     } finally {
       setIsSaving(false);
     }
   };
 
-  // Time picker handlers
   const handleTimeChange = (type) => (event, selectedDate) => {
+    // Handle Android cancelation or manual return
+    if (!selectedDate) {
+      if (type === 'bed') {
+        setShowBedPicker(false);
+      } else {
+        setShowWakePicker(false);
+      }
+      return;
+    }
+
     if (type === 'bed') {
       setShowBedPicker(false);
-      if (selectedDate) setBedTime(selectedDate);
+      setBedTime(selectedDate);
     } else {
       setShowWakePicker(false);
-      if (selectedDate) setWakeTime(selectedDate);
+      setWakeTime(selectedDate);
     }
   };
 
-  // Reset handler
   const resetTimes = () => {
-    setBedTime(new Date());
-    setWakeTime(new Date());
+    setBedTime(null);
+    setWakeTime(null);
     setSleepStats({ hours: 0, minutes: 0, score: 0 });
-    Animated.timing(arrowAnim, {
-      toValue: 0,
-      duration: 300,
-      useNativeDriver: false,
-    }).start();
+
+    // Small animation for reset feedback
+    Animated.sequence([
+      Animated.timing(scaleAnim, { toValue: 0.9, duration: 150, useNativeDriver: true }),
+      Animated.timing(scaleAnim, { toValue: 1, duration: 150, useNativeDriver: true })
+    ]).start();
   };
 
-  const formatTime = (date) =>
-    date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const formatTime = (date) => {
+    if (!date) return 'Set Time';
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  };
+
+  // Determine circle color based on score
+  const getScoreColor = (score) => {
+    if (score === 0) return Colors.border.medium; // Gray for no score
+    if (score < 4) return '#FF6347'; // Red for low score (0-3.9)
+    if (score < 7) return '#FFD700'; // Yellow for medium score (4-6.9)
+    return '#32CD32'; // Green for high score (7-10)
+  };
 
   return (
-    <View style={styles.container}>
+    <View
+      style={styles.container}
+    >
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.title}>Sleep Tracker</Text>
         <TouchableOpacity onPress={resetTimes} disabled={isSaving}>
-          <Text style={[styles.resetText, isSaving && styles.disabledText]}>
-            Reset
-          </Text>
+          <Icon
+            name="refresh-ccw"
+            size={20}
+            color={isSaving ? Colors.border.medium : Colors.primary}
+          />
         </TouchableOpacity>
       </View>
 
@@ -136,262 +204,217 @@ const SleepTrack = () => {
       <View style={styles.timeContainer}>
         <TimeCard
           icon="moon"
-          title="Bed Time"
+          title="Sleep"
           time={formatTime(bedTime)}
           onPress={() => setShowBedPicker(true)}
-          gradientColors={['#6F9167', '#4A6B43']}
+          color={Colors.primary}
+          disabled={isSaving}
         />
         <TimeCard
-          icon="sun"
-          title="Wake Time"
+          icon="sunrise"
+          title="Wake"
           time={formatTime(wakeTime)}
           onPress={() => setShowWakePicker(true)}
-          gradientColors={['#035553', '#023938']}
+          color={Colors.primaryDark}
           disabled={!bedTime || isSaving}
         />
       </View>
 
-      {/* Sleep Quality Indicator */}
-      <View style={styles.qualityContainer}>
-        <LinearGradient
-          colors={['#FF6B6B', '#4ECDC4', '#45B7D1']}
-          style={styles.gradientBar}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
-        >
-          <Animated.View
-            style={[
-              styles.arrow,
-              {
-                left: arrowAnim.interpolate({
-                  inputRange: [0, 90],
-                  outputRange: ['0%', '90%'],
-                }),
-              },
-            ]}
-          />
-        </LinearGradient>
-        <View style={styles.qualityLabels}>
-          <Text style={styles.label}>Poor</Text>
-          <Text style={styles.label}>Excellent</Text>
-        </View>
-      </View>
+      {/* Sleep Score Circle - Always Visible */}
+      {bedTime && wakeTime &&
 
-      {/* Sleep Stats */}
-      {sleepStats.hours > 0 && (
-        <View style={styles.statsContainer}>
-          <StatItem label="Duration" value={`${sleepStats.hours}h ${sleepStats.minutes}m`} />
-          <StatItem label="Score" value={sleepStats.score.toFixed(1)} />
-          <TouchableOpacity
-            style={[styles.saveButton, isSaving && styles.saveButtonDisabled]}
-            onPress={saveSleepData}
-            disabled={isSaving}
-          >
-            <Text style={styles.saveText}>
-              {isSaving ? 'Saving...' : 'Save Sleep'}
-            </Text>
-          </TouchableOpacity>
+        <View style={styles.scoreContainer}>
+          <Animated.View style={[styles.scoreCircle, {
+            transform: [{ scale: scaleAnim }],
+            backgroundColor: getScoreColor(sleepStats.score),
+          }]}>
+            <Text style={styles.scoreText}>{sleepStats.score.toFixed(1)}</Text>
+            <Text style={styles.scoreLabel}>Sleep Score</Text>
+          </Animated.View>
+
+          {/* Always show stats row but conditionally show duration */}
+          <View style={styles.statsRow}>
+            <StatItem
+              icon="clock"
+              value={sleepStats.hours > 0 ? `${sleepStats.hours}h ${sleepStats.minutes}m` : "-"}
+              label="Duration"
+            />
+            {(bedTime && wakeTime) && (
+              <TouchableOpacity
+                style={[styles.saveButton, isSaving && styles.saveButtonDisabled]}
+                onPress={saveSleepData}
+                disabled={isSaving}
+              >
+                <Text style={styles.saveText}>
+                  {isSaving ? 'Saving...' : 'Save'}
+                </Text>
+              </TouchableOpacity>
+            )}
+          </View>
         </View>
-      )}
+      }
 
       {/* Time Pickers */}
       {showBedPicker && (
         <DateTimePicker
-          value={bedTime}
+          value={bedTime || new Date()}
           mode="time"
           display="spinner"
           onChange={handleTimeChange('bed')}
+          accentColor={Colors.primary}
         />
       )}
       {showWakePicker && (
         <DateTimePicker
-          value={wakeTime}
+          value={wakeTime || new Date()}
           mode="time"
           display="spinner"
           onChange={handleTimeChange('wake')}
+          accentColor={Colors.primary}
         />
       )}
     </View>
   );
 };
 
-// Reusable Components
-const TimeCard = ({ icon, title, time, onPress, gradientColors, disabled }) => (
-  <TouchableOpacity onPress={onPress} disabled={disabled} style={styles.timeCard}>
-    <LinearGradient colors={gradientColors} style={styles.timeGradient}>
-      <Icon name={icon} size={24} color="#fff" />
-      <Text style={styles.timeTitle}>{title}</Text>
-      <Text style={styles.timeText}>{time}</Text>
-    </LinearGradient>
+const TimeCard = ({ icon, title, time, onPress, color, disabled }) => (
+  <TouchableOpacity
+    onPress={onPress}
+    disabled={disabled}
+    style={[styles.timeCard, disabled && styles.disabledCard]}
+  >
+    <View style={[styles.timeIconCircle, { backgroundColor: color }]}>
+      <Icon name={icon} size={20} color={Colors.text.light} />
+    </View>
+    <Text style={styles.timeTitle}>{title}</Text>
+    <Text style={styles.timeText}>{time}</Text>
   </TouchableOpacity>
 );
 
-const StatItem = ({ label, value }) => (
+const StatItem = ({ icon, value, label }) => (
   <View style={styles.statItem}>
-    <Text style={styles.statLabel}>{label}</Text>
+    <Icon name={icon} size={18} color={Colors.text.secondary} />
     <Text style={styles.statValue}>{value}</Text>
+    <Text style={styles.statLabel}>{label}</Text>
   </View>
 );
 
 const styles = StyleSheet.create({
-  // Base Container
   container: {
     flex: 1,
-    padding: 15,
-    // backgroundColor: Colors.background.primary,
-    borderRadius: 15,
-    marginTop: 20,
-    // margin: 10,
-    // elevation: 4,
+    padding: 20,
+    borderRadius: 20,
   },
-
-  // Header Styles
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingBottom: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(0,0,0,0.05)',
+    marginBottom: 25,
   },
   title: {
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: '700',
-    color: '#333333',
+    color: Colors.text.dark,
     fontFamily: 'Poppins-Bold',
   },
-  resetText: {
-    fontSize: 15,
-    color: '#035553',
-    fontFamily: 'Poppins-Medium',
-    opacity: 0.9,
-  },
-  disabledText: {
-    color: '#999999',
-    opacity: 0.6,
-  },
-
-  // Time Selection Styles
   timeContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 15,
+    marginBottom: 30,
   },
   timeCard: {
-    width: '47%',
-    borderRadius: 12,
-    overflow: 'hidden',
-    marginVertical: 5,
+    width: '48%',
+    backgroundColor: Colors.background.primary,
+    borderRadius: 15,
+    padding: 15,
+    alignItems: 'center',
+    elevation: 3,
+    shadowColor: Colors.border.dark,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
-    elevation: 2,
   },
-  timeGradient: {
-    padding: 12,
+  disabledCard: {
+    opacity: 0.6,
+  },
+  timeIconCircle: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
-    height: 100,
+    marginBottom: 10,
   },
   timeTitle: {
-    color: '#FFFFFF',
-    fontSize: 15,
-    fontWeight: '600',
-    marginTop: 6,
-    fontFamily: 'Poppins-SemiBold',
+    color: Colors.text.secondary,
+    fontSize: 14,
+    fontFamily: 'Poppins-Medium',
   },
   timeText: {
-    color: '#FFFFFF',
-    fontSize: 18,
-    marginTop: 4,
-    fontFamily: 'Poppins-Regular',
-    opacity: 0.95,
+    color: Colors.text.primary,
+    fontSize: 20,
+    fontFamily: 'Poppins-SemiBold',
+    marginTop: 5,
   },
-
-  // Quality Indicator Styles
-  qualityContainer: {
-    marginVertical: 20,
+  scoreContainer: {
     alignItems: 'center',
+    marginTop: 20,
   },
-  gradientBar: {
-    width: '90%',
-    height: 14,
-    borderRadius: 7,
-    overflow: 'hidden',
-    position: 'relative',
-  },
-  arrow: {
-    position: 'absolute',
-    bottom: -10,
-    width: 0,
-    height: 0,
-    borderLeftWidth: 10,
-    borderRightWidth: 10,
-    borderTopWidth: 10,
-    borderLeftColor: 'transparent',
-    borderRightColor: 'transparent',
-    borderTopColor: '#444444',
-  },
-  qualityLabels: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '90%',
-    marginTop: 12,
-  },
-  label: {
-    color: '#666666',
-    fontSize: 13,
-    fontFamily: 'Poppins-Regular',
-  },
-
-  statsContainer: {
-    backgroundColor: '#F8F9FB',
-    borderRadius: 12,
-    padding: 15,
-    marginTop: 10,
+  scoreCircle: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 2,
+    justifyContent: 'center',
+    marginBottom: 20,
+    elevation: 5,
   },
-  statItem: {
+  scoreText: {
+    color: Colors.text.light,
+    fontSize: 36,
+    fontFamily: 'Poppins-Bold',
+  },
+  scoreLabel: {
+    color: Colors.text.light,
+    fontSize: 14,
+    fontFamily: 'Poppins-Regular',
+    opacity: 0.9,
+  },
+  statsRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '100%',
-    paddingVertical: 6,
+    alignItems: 'center',
   },
-  statLabel: {
-    color: '#444444',
-    fontSize: 15,
-    fontFamily: 'Poppins-Medium',
+  statItem: {
+    alignItems: 'center',
+    flex: 1,
   },
   statValue: {
-    color: '#035553',
-    fontSize: 15,
+    color: Colors.primary,
+    fontSize: 18,
     fontFamily: 'Poppins-SemiBold',
+    marginVertical: 5,
   },
-
-  // Save Button Styles
+  statLabel: {
+    color: Colors.text.secondary,
+    fontSize: 12,
+    fontFamily: 'Poppins-Regular',
+  },
   saveButton: {
-    backgroundColor: 'rgba(3,85,83,0.9)',
-    paddingVertical: 10,
-    paddingHorizontal: 25,
-    borderRadius: 10,
-    marginTop: 15,
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '70%',
+    backgroundColor: Colors.primary,
+    paddingVertical: 12,
+    paddingHorizontal: 30,
+    borderRadius: 25,
+    elevation: 2,
   },
   saveButtonDisabled: {
-    backgroundColor: '#999999',
+    backgroundColor: Colors.border.medium,
     opacity: 0.8,
   },
   saveText: {
-    color: '#FFFFFF',
-    fontSize: 15,
-    fontWeight: '600',
+    color: Colors.text.light,
+    fontSize: 16,
     fontFamily: 'Poppins-SemiBold',
   },
 });

@@ -1,4 +1,4 @@
-import React, {useContext, useState} from 'react';
+import React, { useContext, useState } from 'react';
 import {
   View,
   Text,
@@ -11,43 +11,43 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import {useNavigation} from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {AuthContext} from '../../../../context/authContext';
-import {Dimensions} from 'react-native';
+import { AuthContext } from '../../../../context/authContext';
+import { Dimensions } from 'react-native';
 import url from '../../../../context/url';
 import LinearGradient from 'react-native-linear-gradient';
 
-export default function LoginScreen({navigation}) {
+export default function LoginScreen({ navigation }) {
   //global
   const [state, setState] = useContext(AuthContext);
   const [showPassword, setShowPassword] = useState(false);
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
-  const [LoginFormVisibility,setLoginFormVisiblity]= useState(false);
-  const [LoginFormButtonVisibility,setLoginFormButtonVisiblity]= useState(true);
+  const [LoginFormVisibility, setLoginFormVisiblity] = useState(false);
+  const [LoginFormButtonVisibility, setLoginFormButtonVisiblity] = useState(true);
 
-  const [UserType,setUserType]=useState('');
+  const [UserType, setUserType] = useState('');
 
 
   console.log(state.url);
   console.log(state);
- const handlePatientUserType = () =>{
+  const handlePatientUserType = () => {
     setUserType('patient');
 
     setLoginFormButtonVisiblity(false)
     setLoginFormVisiblity(true);
 
- };
+  };
 
- const handleDoctorUserType = () =>{
-  setUserType('doctor');
+  const handleDoctorUserType = () => {
+    setUserType('doctor');
 
-  
-  setLoginFormButtonVisiblity(false);
-  setLoginFormVisiblity(true);
- };
+
+    setLoginFormButtonVisiblity(false);
+    setLoginFormVisiblity(true);
+  };
 
   const handleLogin = () => {
     try {
@@ -59,7 +59,7 @@ export default function LoginScreen({navigation}) {
       }
 
       loginUser();
-      console.log(`Login Data: `, {email, password});
+      console.log(`Login Data: `, { email, password });
     } catch (error) {
       setLoading(false);
       console.log(error);
@@ -67,7 +67,7 @@ export default function LoginScreen({navigation}) {
   };
 
   const loginUser = () => {
-    let data = {email, password};
+    let data = { email, password };
     fetch(`${url}/api/v1/auth/${UserType}/login`, {
       method: 'POST',
       headers: {
@@ -139,47 +139,47 @@ export default function LoginScreen({navigation}) {
 
   return (
     <KeyboardAvoidingView
-      style={{flex: 1, backgroundColor: 'rgba(111,145,103,0.8)'}}
+      style={{ flex: 1, backgroundColor: 'rgba(111,145,103,0.8)' }}
       behavior={Platform.OS === 'ios' ? 'padding' : null}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -500}>
-        <LinearGradient colors={['#b1f1f2','rgba(3,85,83,0.9)']} style={{flex:1}}
-    start={{x:1,y:0.1}}
-    end={{x:1,y:1}}>
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          alignContent: 'center',
-          // margin: 10,
-        }}>
-        <TouchableOpacity
-          style={styles.backButton} // Add or modify a style for the back button
-          onPress={() => {
-            navigation.navigate('Welcome');
+      <LinearGradient colors={['#b1f1f2', 'rgba(3,85,83,0.9)']} style={{ flex: 1 }}
+        start={{ x: 1, y: 0.1 }}
+        end={{ x: 1, y: 1 }}>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            alignContent: 'center',
+            // margin: 10,
           }}>
+          <TouchableOpacity
+            style={styles.backButton} // Add or modify a style for the back button
+            onPress={() => {
+              navigation.navigate('Welcome');
+            }}>
+            <Image
+              source={require('../../../../img/icons/assets/LoginSignup/backbutton.png')}
+            />
+          </TouchableOpacity>
+
+        </View>
+
+        <View style={styles.curvedcontainer}>
           <Image
-            source={require('../../../../img/icons/assets/LoginSignup/backbutton.png')}
+            source={require('../../../../img/icons/assets/LoginSignup/Doctorandpatient.png')}
+            style={{ width: imageWidth, height: imageHeight, }}
+            resizeMode="contain"
           />
-        </TouchableOpacity>
-       
-      </View>
-
-      <View style={styles.curvedcontainer}>
-        <Image
-          source={require('../../../../img/icons/assets/LoginSignup/Doctorandpatient.png')}
-          style={{width: imageWidth, height: imageHeight,}}
-          resizeMode="contain"
-        />
-      </View>
-      <Text style={styles.heading}>Login</Text>
-
-      
-      
+        </View>
+        <Text style={styles.heading}>Login</Text>
 
 
-      <ScrollView contentContainerStyle={styles.maincontainer}>
 
-        <View style={{marginTop:40,flex:0.5,justifyContent:'space-evenly',display: LoginFormButtonVisibility?'flex':'none'}}>
+
+
+        <ScrollView contentContainerStyle={styles.maincontainer}>
+
+          <View style={{ marginTop: 40, flex: 0.5, justifyContent: 'space-evenly', display: LoginFormButtonVisibility ? 'flex' : 'none' }}>
             <TouchableOpacity style={styles.DoctorPatientButton} onPress={handlePatientUserType}>
               <Text style={styles.DoctorPatientText}>Patient</Text>
             </TouchableOpacity>
@@ -187,66 +187,66 @@ export default function LoginScreen({navigation}) {
             <TouchableOpacity style={styles.DoctorPatientButton} onPress={handleDoctorUserType}>
               <Text style={styles.DoctorPatientText}>Doctor</Text>
             </TouchableOpacity>
-        </View>
-
-        <View style={[styles.formContainer,{display: LoginFormVisibility?'flex':'none'}]}>
-         
-          <View style={styles.emailpasswordInputContainer}>
-            <Image source={require('../../../../img/icons/assets/LoginSignup/usericon.png')} style={{width:23,height:23,marginBottom:13}}/>
-            <TextInput
-              style={styles.input}
-              placeholder="Your email id"
-              placeholderTextColor={'#fff'}
-              onChangeText={email => {
-                setEmail(email);
-              }}
-              value={email}
-            />
           </View>
 
-          <View style={styles.emailpasswordInputContainer}>
-          <Image source={require('../../../../img/icons/assets/LoginSignup/lock.png')} style={{width:23,height:23,marginBottom:13}}/>
-            <TextInput
-              style={styles.input}
-              placeholder="Your password"
-              placeholderTextColor={'#fff'}
-              secureTextEntry={!showPassword}
-              onChangeText={text => {
-                setPassword(text);
-              }}
-              value={password}
-            />
-            <TouchableOpacity
-              style={styles.eyeIconContainer}
-              onPress={() => {
-                setShowPassword(!showPassword);
-              }}>
-              <Image
-                source={
-                  showPassword
-                    ? require('../../../../img/icons/assets/LoginSignup/eye.png')
-                    : require('../../../../img/icons/assets/LoginSignup/closedeye.png')
-                }
-                style={styles.eyeIcon}
+          <View style={[styles.formContainer, { display: LoginFormVisibility ? 'flex' : 'none' }]}>
+
+            <View style={styles.emailpasswordInputContainer}>
+              <Image source={require('../../../../img/icons/assets/LoginSignup/usericon.png')} style={{ width: 23, height: 23, marginBottom: 13 }} />
+              <TextInput
+                style={styles.input}
+                placeholder="Your email id"
+                placeholderTextColor={'#fff'}
+                onChangeText={email => {
+                  setEmail(email);
+                }}
+                value={email}
               />
-            </TouchableOpacity>
-          </View>
-          <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-            <Text style={styles.buttonText}>
-              {!loading ? 'Login' : 'Logging in...'}
-            </Text>
-          </TouchableOpacity>
-          <View style={styles.signupContainer}>
-            <Text style={[styles.signupText,{opacity:0.6}]}>Don't have an account?</Text>
-            <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
-              <Text style={[styles.signupText]}>
-                {' '}
-                Sign-up
+            </View>
+
+            <View style={styles.emailpasswordInputContainer}>
+              <Image source={require('../../../../img/icons/assets/LoginSignup/lock.png')} style={{ width: 23, height: 23, marginBottom: 13 }} />
+              <TextInput
+                style={styles.input}
+                placeholder="Your password"
+                placeholderTextColor={'#fff'}
+                secureTextEntry={!showPassword}
+                onChangeText={text => {
+                  setPassword(text);
+                }}
+                value={password}
+              />
+              <TouchableOpacity
+                style={styles.eyeIconContainer}
+                onPress={() => {
+                  setShowPassword(!showPassword);
+                }}>
+                <Image
+                  source={
+                    showPassword
+                      ? require('../../../../img/icons/assets/LoginSignup/eye.png')
+                      : require('../../../../img/icons/assets/LoginSignup/closedeye.png')
+                  }
+                  style={styles.eyeIcon}
+                />
+              </TouchableOpacity>
+            </View>
+            <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+              <Text style={styles.buttonText}>
+                {!loading ? 'Login' : 'Logging in...'}
               </Text>
             </TouchableOpacity>
+            <View style={styles.signupContainer}>
+              <Text style={[styles.signupText, { opacity: 0.6 }]}>Don't have an account?</Text>
+              <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
+                <Text style={[styles.signupText]}>
+                  {' '}
+                  Sign-up
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
-      </ScrollView>
+        </ScrollView>
       </LinearGradient>
     </KeyboardAvoidingView>
   );
@@ -272,7 +272,7 @@ const styles = StyleSheet.create({
     // backgroundColor: 'rgba(240, 240, 240, 0.9)',
     // paddingTop: 15,
     paddingHorizontal: 20,
-    
+
     // borderTopLeftRadius: 30,
     // borderTopRightRadius: 30,
   },
@@ -280,19 +280,19 @@ const styles = StyleSheet.create({
     fontSize: 40,
     fontWeight: 'bold',
     color: '#fff',
-    width:'100%',
+    width: '100%',
     // paddingTop:20,
 
     // backgroundColor:'blue',
-    textAlign:'center'
+    textAlign: 'center'
   },
   heading2: {
     fontSize: 16,
     // fontWeight: 'bold',
-    
+
     color: '#fff',
     textAlign: 'center',
-    
+
 
     // backgroundColor:'blue'
   },
@@ -309,7 +309,7 @@ const styles = StyleSheet.create({
     // backgroundColor:'green'
   },
   input: {
-    flex:1,
+    flex: 1,
     borderColor: '#fff',
     borderBottomWidth: 1,
     marginBottom: 15,
@@ -324,7 +324,7 @@ const styles = StyleSheet.create({
 
 
   },
- 
+
   eyeIconContainer: {
     position: 'absolute',
     right: 0,
@@ -332,14 +332,14 @@ const styles = StyleSheet.create({
   eyeIcon: {
     width: 20,
     height: 16,
-    marginBottom:5
+    marginBottom: 5
   },
   loginButton: {
     backgroundColor: '#fff',
     paddingVertical: 10,
     borderRadius: 100,
     marginTop: 20,
-    
+
   },
   buttonText: {
     fontSize: 20,
@@ -347,14 +347,14 @@ const styles = StyleSheet.create({
     color: '#458194',
     textAlign: 'center',
   },
-  DoctorPatientButton:{
+  DoctorPatientButton: {
     backgroundColor: '#fff',
     paddingVertical: 10,
     borderRadius: 100,
-    
+
   },
 
-  DoctorPatientText:{
+  DoctorPatientText: {
     fontSize: 20,
     fontWeight: 'bold',
     color: '#458194',
@@ -371,7 +371,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#fff',
   },
-  
+
   backButton: {
     position: 'absolute',
     top: 10,

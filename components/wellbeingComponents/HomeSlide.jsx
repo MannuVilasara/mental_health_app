@@ -1,28 +1,22 @@
-import { Button, FlatList, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import React, { useEffect, useState } from 'react';
+import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+// import LinearGradient from 'react-native-linear-gradient';
 import { useUsageStats } from '../../Hooks/useUsagePermission';
 import SocialMediaUsage from './SocialMediaUsage';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Colors } from '../../ui/Colors';
-import Heading from '../../ui/Headings';
+import Icon from 'react-native-vector-icons/Feather';
 
 export default function HomeSlide() {
     const {
         hasPermission,
         requestPermission,
-        usageStats,
         totalScreenTime,
-        installedApps,
         topUsedApps,
-        isMonitoring,
-        startMonitoring,
-        stopMonitoring,
-        closeApp,
         error,
         fetchUsageStats,
         fetchTotalScreenTime,
         fetchTopUsedApps,
-        fetchInstalledApps,
         refreshAllData,
         formatTime,
     } = useUsageStats();
@@ -31,17 +25,14 @@ export default function HomeSlide() {
 
     async function getUserData() {
         try {
-
-            const user = await AsyncStorage.getItem('@auth')
-            const userData = JSON.parse(user)
-            setUser(userData.user)
-            // console.log('user:  ', userData.user)
+            const user = await AsyncStorage.getItem('@auth');
+            const userData = JSON.parse(user);
+            setUser(userData.user);
         } catch (error) {
-            console.log('error:  ', error)
+            console.log('error: ', error);
         }
     }
 
-    // Fetch data when permission is granted
     useEffect(() => {
         if (hasPermission) {
             const now = new Date();
@@ -66,71 +57,70 @@ export default function HomeSlide() {
         }
     }, [hasPermission]);
 
-    // Handle refresh button press
     const handleRefresh = () => {
         if (hasPermission) {
-            const now = Date.now();
-            const dayStart = now - (now % (24 * 60 * 60 * 1000)); // Start of current day
-            refreshAllData(dayStart, now, 5);
+            const now = new Date();
+            const dayStart = new Date(now);
+            dayStart.setHours(0, 0, 0, 0);
+            refreshAllData(dayStart.getTime(), now.getTime(), 5);
         }
     };
 
     return (
-        <View style={styles.container}>
-            {/* <View style={styles.socialMediaMonitoringTitle}>
-                <Text
-                    style={[
-                        styles.color_black,
-                        { fontSize: 17, fontWeight: 600, width: 'min-content', fontFamily: 'Poppins-SemiBold' },
-                    ]}>
-                    Social Media Monitoring
-                </Text>
-                <TouchableOpacity style={{ width: 'min-content' }} onPress={handleRefresh}>
-                    <Text
-                        style={[
-                            styles.color_black,
-                            { fontSize: 17, width: '100%', textAlign: 'right', fontFamily: 'Poppins-Regular' },
-                        ]}>
-                        Refresh
-                    </Text>
-                </TouchableOpacity>
-            </View> */}
-            <View style={{ width: '100%', padding: 15 }}>
-                <Heading title="Social Media Monitoring" onPress={handleRefresh} buttonTitle="Refresh" />
+        <View
+            // colors={[Colors.background.secondary, Colors.background.tertiary]}
+            style={styles.container}
+        >
+            {/* Header */}
+            <View style={styles.header}>
+                <Text style={styles.title}>Screen Time</Text>
+                {hasPermission && (
+                    <TouchableOpacity onPress={handleRefresh} style={styles.refreshButton}>
+                        <Icon name="refresh-ccw" size={20} color={Colors.primary} />
+                    </TouchableOpacity>
+                )}
             </View>
-            {error && <Text style={[styles.color_black, { textAlign: 'center', marginTop: 10 }]}>{error.message}</Text>}
+
+            {/* Content */}
+            {error && (
+                <Text style={styles.errorText}>
+                    {error.message}
+                </Text>
+            )}
 
             {hasPermission ? (
-                <View style={{ width: '100%', alignItems: 'center', gap: 10, height: 'min-content' }}>
-                    <View style={{ width: '100%', alignItems: 'center', gap: 10, height: 'min-content', flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 15 }}>
-                        <Text style={[styles.color_black, { fontSize: 17, fontFamily: 'Poppins-Regular', textAlign: 'center' }]}>
-                            Total Screen time
-                        </Text>
-                        <Text style={{ color: Colors.text.dark, fontSize: 17, fontFamily: 'Poppins-Regular', textAlign: 'center' }}>
-                            {formatTime(totalScreenTime)}
-                        </Text>
+                <View style={styles.content}>
+                    {/* Total Screen Time Card */}
+                    <View style={styles.screenTimeCard}>
+                        <Icon name="clock" size={24} color={Colors.primary} />
+                        <View style={styles.screenTimeText}>
+                            <Text style={styles.screenTimeValue}>
+                                {formatTime(totalScreenTime)}
+                            </Text>
+                            <Text style={styles.screenTimeLabel}>
+                                Today's Screen Time
+                            </Text>
+                        </View>
                     </View>
-                    <SocialMediaUsage usageStats={topUsedApps} formatTime={formatTime} />
+
+                    {/* Social Media Usage */}
+                    <SocialMediaUsage
+                        usageStats={topUsedApps}
+                        formatTime={formatTime}
+                        style={styles.socialMediaSection}
+                    />
                 </View>
             ) : (
-                <View style={{ width: '100%', alignItems: 'center', gap: 10, marginTop: 40 }}>
-                    <Text
-                        style={[
-                            styles.color_black,
-                            {
-                                fontSize: 17,
-                                marginBottom: 5,
-                                marginLeft: 5,
-                                fontFamily: 'Poppins-Regular',
-                                textAlign: 'center',
-                                width: '70%',
-                            },
-                        ]}>
-                        You have to grant permission to use this feature
+                <View style={styles.permissionContainer}>
+                    <Text style={styles.permissionText}>
+                        Grant permission to track your screen time and app usage
                     </Text>
-                    <TouchableOpacity onPress={requestPermission} style={styles.grantPermissionButton}>
-                        <Text style={{ fontFamily: 'Poppins-SemiBold', color: 'white', width: 'min-content' }}>
-                            Grant Permission
+                    <TouchableOpacity
+                        onPress={requestPermission}
+                        style={styles.permissionButton}
+                    >
+                        <Text style={styles.permissionButtonText}>
+                            Enable Tracking
                         </Text>
                     </TouchableOpacity>
                 </View>
@@ -139,62 +129,91 @@ export default function HomeSlide() {
     );
 }
 
-
 const styles = StyleSheet.create({
-    color_black: {
-        color: '#444444',
-    },
-    socialMediaMonitoringTitle: {
-        width: '100%',
-        paddingHorizontal: 15,
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        overflow: 'hidden',
-    },
     container: {
-        width: '100%',
+        flex: 1,
+        // borderRadius: 20,
+        padding: 20,
+        marginVertical: 10,
+        backgroundColor: Colors.background.tertiary,
+    },
+    header: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 25,
+    },
+    title: {
+        fontSize: 26,
+        fontFamily: 'Poppins-Bold',
+        color: Colors.text.dark,
+    },
+    refreshButton: {
+        padding: 8,
         backgroundColor: Colors.background.primary,
-        alignItems: 'center',
-        justifyContent: 'center',
-        overflow: 'hidden',
-        // paddingVertical: 20,
-    },
-    grantPermissionButton: {
-        backgroundColor: '#6f9167',
-        paddingHorizontal: 20,
-        paddingVertical: 10,
-        alignItems: 'center',
         borderRadius: 12,
-        width: '50%',
-        alignSelf: 'center',
+        elevation: 2,
     },
-    appContainer: {
-        width: '100%',
-        height: 60,
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        borderBottomWidth: 1,
-        borderColor: 'rgba(111,145,103,0.9)',
-        marginBottom: 10,
-        paddingVertical: 10,
-        paddingHorizontal: 15,
+    errorText: {
+        color: Colors.status.error,
+        fontSize: 14,
+        fontFamily: 'Poppins-Regular',
+        textAlign: 'center',
+        marginBottom: 15,
     },
-    appName: {
-        fontSize: 17,
-    },
-    appContent: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 12,
-        justifyContent: 'space-between',
+    content: {
         flex: 1,
         width: '100%',
     },
-    appIcon: {
-        height: '100%',
-        aspectRatio: 1,
-        borderRadius: 10,
+    screenTimeCard: {
+        backgroundColor: Colors.background.primary,
+        borderRadius: 15,
+        padding: 15,
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 20,
+        elevation: 3,
+    },
+    screenTimeText: {
+        marginLeft: 15,
+    },
+    screenTimeValue: {
+        fontSize: 24,
+        fontFamily: 'Poppins-SemiBold',
+        color: Colors.primary,
+    },
+    screenTimeLabel: {
+        fontSize: 14,
+        fontFamily: 'Poppins-Regular',
+        color: Colors.text.secondary,
+    },
+    socialMediaSection: {
+        flex: 1,
+    },
+    permissionContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 20,
+    },
+    permissionText: {
+        fontSize: 16,
+        fontFamily: 'Poppins-Regular',
+        color: Colors.text.secondary,
+        textAlign: 'center',
+        marginBottom: 20,
+        lineHeight: 24,
+    },
+    permissionButton: {
+        backgroundColor: Colors.primary,
+        paddingVertical: 12,
+        paddingHorizontal: 30,
+        borderRadius: 25,
+        elevation: 2,
+    },
+    permissionButtonText: {
+        color: Colors.text.light,
+        fontSize: 16,
+        fontFamily: 'Poppins-SemiBold',
     },
 });
