@@ -99,7 +99,7 @@ const Mood = ({ navigation }) => {
             <Icon name="message-circle" size={20} color={Colors.text.dark} style={styles.chatIcon} />
             <Text style={styles.chatButtonText}>Chat with personal assistant...</Text>
             <View style={styles.shareButton}>
-              <Text style={styles.shareButtonText}>Share</Text>
+              <Text style={styles.shareButtonText}>Chat</Text>
             </View>
           </TouchableOpacity>
         </View>

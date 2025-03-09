@@ -6,6 +6,7 @@ import SocialMediaUsage from './SocialMediaUsage';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Colors } from '../../ui/Colors';
 import Icon from 'react-native-vector-icons/Feather';
+import Heading from '../../ui/Headings';
 
 export default function HomeSlide() {
     const {
@@ -72,14 +73,15 @@ export default function HomeSlide() {
             style={styles.container}
         >
             {/* Header */}
-            <View style={styles.header}>
+            {/* <View style={styles.header}>
                 <Text style={styles.title}>Screen Time</Text>
                 {hasPermission && (
                     <TouchableOpacity onPress={handleRefresh} style={styles.refreshButton}>
                         <Icon name="refresh-ccw" size={20} color={Colors.primary} />
                     </TouchableOpacity>
                 )}
-            </View>
+            </View> */}
+            <Heading title="Screen Time" buttonTitle="Refresh" onPress={handleRefresh} />
 
             {/* Content */}
             {error && (

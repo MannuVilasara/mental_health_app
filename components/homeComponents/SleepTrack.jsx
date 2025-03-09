@@ -5,6 +5,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { AuthContext } from '../../context/authContext';
 import url from '../../context/url';
 import { Colors } from '../../ui/Colors';
+import Heading from '../../ui/Headings';
 
 const SleepTrack = () => {
   const [state] = useContext(AuthContext);
@@ -189,7 +190,7 @@ const SleepTrack = () => {
       style={styles.container}
     >
       {/* Header */}
-      <View style={styles.header}>
+      {/* <View style={styles.header}>
         <Text style={styles.title}>Sleep Tracker</Text>
         <TouchableOpacity onPress={resetTimes} disabled={isSaving}>
           <Icon
@@ -198,8 +199,8 @@ const SleepTrack = () => {
             color={isSaving ? Colors.border.medium : Colors.primary}
           />
         </TouchableOpacity>
-      </View>
-
+      </View> */}
+      <Heading title="Sleep Tracker" buttonTitle="Refresh" onPress={resetTimes} />
       {/* Time Selection */}
       <View style={styles.timeContainer}>
         <TimeCard
@@ -324,7 +325,7 @@ const styles = StyleSheet.create({
   },
   timeCard: {
     width: '48%',
-    backgroundColor: Colors.background.primary,
+    backgroundColor: Colors.background.tertiary,
     borderRadius: 15,
     padding: 15,
     alignItems: 'center',
