@@ -23,6 +23,7 @@ function SignupScreen({ navigation }) {
   const [selectedImage, setSelectedImage] = useState(null);
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
+  const [doctorId, setDoctorId] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
@@ -41,7 +42,7 @@ function SignupScreen({ navigation }) {
       if (password !== confirmPassword) {
         Alert.alert('Passwords do not match');
         setLoading(false);
-        return; 
+        return;
       }
       checkUser();
       console.log(`Varified Data: `, { email, password });
@@ -75,7 +76,7 @@ function SignupScreen({ navigation }) {
       const responseData = await response.json();
 
       if (responseData.success) {
-        navigation.navigate('SecondSignup', { email1: email, password1: password });
+        navigation.navigate('SecondSignup', { email1: email, password1: password, doctorId: doctorId || null });
 
       } else {
         Alert.alert('User already registered', responseData.message);
@@ -135,131 +136,133 @@ function SignupScreen({ navigation }) {
   };
 
   return (
-    <LinearGradient colors={['#83C3C4','rgba(3,85,83,0.9)']} style={{flex:1}}
-    start={{x:1,y:0.2}}
-    end={{x:1,y:1}}>
-    <ScrollView contentContainerStyle={styles.scrollView}>
-      <View style={styles.container}>
-        <View style={styles.header}>
-          <TouchableOpacity
-            style={styles.backButton}
-            onPress={() => {
-              navigation.navigate('Welcome');
-            }}>
-            <Image source={require('../../../../img/icons/assets/LoginSignup/backbutton.png')} />
-          </TouchableOpacity>
-          
-        </View>
-        <View style={styles.imageContainer}>
-          <View>
-          <Image
-            source={
-              selectedImage
-                ? { uri: selectedImage }
-                : require('../../../../img/icons/assets/LoginSignup/userProfile.png')
-            }
-            style={styles.profileImage}
-            resizeMode="contain"
-          />
-          {/* <TouchableOpacity style={styles.cameraIconContainer} onPress={toggleModal}>
+    <LinearGradient colors={['#83C3C4', 'rgba(3,85,83,0.9)']} style={{ flex: 1 }}
+      start={{ x: 1, y: 0.2 }}
+      end={{ x: 1, y: 1 }}>
+      <ScrollView contentContainerStyle={styles.scrollView}>
+        <View style={styles.container}>
+          <View style={styles.header}>
+            <TouchableOpacity
+              style={styles.backButton}
+              onPress={() => {
+                navigation.navigate('Welcome');
+              }}>
+              <Image source={require('../../../../img/icons/assets/LoginSignup/backbutton.png')} />
+            </TouchableOpacity>
+
+          </View>
+          <View style={styles.imageContainer}>
+            <View>
+              <Image
+                source={
+                  selectedImage
+                    ? { uri: selectedImage }
+                    : require('../../../../img/icons/assets/LoginSignup/userProfile.png')
+                }
+                style={styles.profileImage}
+                resizeMode="contain"
+              />
+              {/* <TouchableOpacity style={styles.cameraIconContainer} onPress={toggleModal}>
             <Image
               source={require('../../../../img/icons/assets/LoginSignup/camera.png')}
               style={styles.cameraIcon}
             />
           </TouchableOpacity> */}
+            </View>
           </View>
-        </View>
-        
-        <View style={styles.mainContainer}>
-        <Text style={styles.title}>Create Your Account</Text>
-        <View style={styles.formContainer}>
-          <Text style={styles.label}>Email</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Your email id"
-            onChangeText={setEmail}
-            placeholderTextColor={'#fff'}
-          />
-          <Text style={styles.label}>Password</Text>
-          <View style={styles.passwordInputContainer}>
-            <TextInput
-              style={styles.passwordInput}
-              placeholder="Your password"
-              placeholderTextColor={'#fff'}
-              secureTextEntry={!showPassword}
-              onChangeText={setPassword}
-              value={password}
-            />
-            <TouchableOpacity
-              style={styles.eyeIconContainer}
-              onPress={() => {
-                setShowPassword(!showPassword);
-              }}>
-              <Image
-                source={
-                  showPassword
-                    ? require('../../../../img/icons/assets/LoginSignup/eye.png')
-                    : require('../../../../img/icons/assets/LoginSignup/closedeye.png')
-                }
-                style={styles.eyeIcon}
+
+          <View style={styles.mainContainer}>
+            <Text style={styles.title}>Create Your Account</Text>
+            <View style={styles.formContainer}>
+              <Text style={styles.label}>Email</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Your email id"
+                onChangeText={setEmail}
+                placeholderTextColor={'#fff'}
               />
-            </TouchableOpacity>
-          </View>
-          <Text style={styles.label}>Confirm Password</Text>
-          <TextInput
-            style={[styles.input, password !== confirmPassword ? { color: 'red' } : { color: 'white' }]}
-            placeholder="Confirm your password"
-            onChangeText={setConfirmPassword}
-            value={confirmPassword}
-            placeholderTextColor={'#fff'}
-            secureTextEntry
-          />
-          <Text style={styles.label}>Doctor ID</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Enter Doctor ID (if any)"
-            placeholderTextColor={'#fff'}
-          />
-        </View>
-        <View style={styles.footer}>
-          <TouchableOpacity style={styles.button} onPress={handleNewClick}>
-            <Text style={styles.buttonText}>{loading ? 'Checking...' : 'Next'}</Text>
-          </TouchableOpacity>
-          <View style={styles.signupContainer}>
-            <Text style={[styles.signupText,{opacity:0.6}]}>Already have an account?</Text>
-            <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-              <Text style={[styles.signupText, {paddingLeft:5}]}>Login</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-        </View>
-        <Modal
-          isVisible={isModalVisible}
-          style={styles.modal}
-          animationInTiming={400}
-          animationOutTiming={800}>
-          <View style={styles.modalContent}>
-            <TouchableOpacity style={styles.modalOption} onPress={handleCameraLaunch}>
-              <Image
-                source={require('../../../../img/icons/assets/LoginSignup/camera3.png')}
-                style={styles.modalIcon}
+              <Text style={styles.label}>Password</Text>
+              <View style={styles.passwordInputContainer}>
+                <TextInput
+                  style={styles.passwordInput}
+                  placeholder="Your password"
+                  placeholderTextColor={'#fff'}
+                  secureTextEntry={!showPassword}
+                  onChangeText={setPassword}
+                  value={password}
+                />
+                <TouchableOpacity
+                  style={styles.eyeIconContainer}
+                  onPress={() => {
+                    setShowPassword(!showPassword);
+                  }}>
+                  <Image
+                    source={
+                      showPassword
+                        ? require('../../../../img/icons/assets/LoginSignup/eye.png')
+                        : require('../../../../img/icons/assets/LoginSignup/closedeye.png')
+                    }
+                    style={styles.eyeIcon}
+                  />
+                </TouchableOpacity>
+              </View>
+              <Text style={styles.label}>Confirm Password</Text>
+              <TextInput
+                style={[styles.input, password !== confirmPassword ? { color: 'red' } : { color: 'white' }]}
+                placeholder="Confirm your password"
+                onChangeText={setConfirmPassword}
+                value={confirmPassword}
+                placeholderTextColor={'#fff'}
+                secureTextEntry
               />
-              <Text style={styles.optionText}>Take Photo</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={[styles.modalOption, styles.borderBottom]} onPress={openImagePicker}>
-              <Image
-                source={require('../../../../img/icons/assets/LoginSignup/gallery.png')}
-                style={styles.modalIcon}
+              <Text style={styles.label}>Doctor ID</Text>
+              <TextInput
+                value={doctorId}
+                onChangeText={setDoctorId}
+                style={styles.input}
+                placeholder="Enter Doctor ID (if any)"
+                placeholderTextColor={'#fff'}
               />
-              <Text style={styles.optionText}>Choose from gallery</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.modalOption} onPress={toggleModal}>
-              <Text style={styles.optionText}>Cancel</Text>
-            </TouchableOpacity>
+            </View>
+            <View style={styles.footer}>
+              <TouchableOpacity style={styles.button} onPress={handleNewClick}>
+                <Text style={styles.buttonText}>{loading ? 'Checking...' : 'Next'}</Text>
+              </TouchableOpacity>
+              <View style={styles.signupContainer}>
+                <Text style={[styles.signupText, { opacity: 0.6 }]}>Already have an account?</Text>
+                <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+                  <Text style={[styles.signupText, { paddingLeft: 5 }]}>Login</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
           </View>
-        </Modal>
-      </View>
-    </ScrollView>
+          <Modal
+            isVisible={isModalVisible}
+            style={styles.modal}
+            animationInTiming={400}
+            animationOutTiming={800}>
+            <View style={styles.modalContent}>
+              <TouchableOpacity style={styles.modalOption} onPress={handleCameraLaunch}>
+                <Image
+                  source={require('../../../../img/icons/assets/LoginSignup/camera3.png')}
+                  style={styles.modalIcon}
+                />
+                <Text style={styles.optionText}>Take Photo</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={[styles.modalOption, styles.borderBottom]} onPress={openImagePicker}>
+                <Image
+                  source={require('../../../../img/icons/assets/LoginSignup/gallery.png')}
+                  style={styles.modalIcon}
+                />
+                <Text style={styles.optionText}>Choose from gallery</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.modalOption} onPress={toggleModal}>
+                <Text style={styles.optionText}>Cancel</Text>
+              </TouchableOpacity>
+            </View>
+          </Modal>
+        </View>
+      </ScrollView>
     </LinearGradient>
   );
 }
@@ -270,7 +273,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-  
+
     // backgroundColor: 'white',
   },
   header: {
@@ -286,8 +289,8 @@ const styles = StyleSheet.create({
     fontSize: 25,
     fontWeight: 'bold',
     color: '#fff',
-    textAlign:'center',
-    marginBottom:25,
+    textAlign: 'center',
+    marginBottom: 25,
 
   },
   imageContainer: {
@@ -311,13 +314,13 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
   },
-  mainContainer:{
+  mainContainer: {
     // backgroundColor: 'rgba(240, 240, 240, 0.9)',
     // paddingTop: 20,
     borderTopRightRadius: 30,
     borderTopLeftRadius: 30,
     marginTop: 10,
-    height:'100%'
+    height: '100%'
   },
   formContainer: {
     paddingHorizontal: 20,

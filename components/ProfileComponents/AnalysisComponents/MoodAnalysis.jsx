@@ -6,7 +6,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import url from '../../../context/url';
 import { Colors } from '../../../ui/Colors';
 
-const MoodAnalysis = () => {
+const MoodAnalysis = ({ patientId }) => {
   //global
   const [state] = useContext(AuthContext);
   const { token } = state;
@@ -19,7 +19,12 @@ const MoodAnalysis = () => {
   //function to get data
   const getData = async () => {
     try {
-      let result = await fetch(`${url}/api/v1/feel/get`, {
+      let endpoint = `${url}/api/v1/feel/get`;
+      if (patientId) {
+        endpoint += `?patientId=${patientId}`;
+      }
+
+      let result = await fetch(endpoint, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -38,7 +43,7 @@ const MoodAnalysis = () => {
 
   useEffect(() => {
     getData();
-  }, []);
+  }, [patientId, token]);
 
   useEffect(() => {
     setItem1();

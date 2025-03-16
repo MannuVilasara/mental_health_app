@@ -1,20 +1,21 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity, FlatList } from 'react-native';
+import React, { useState, useEffect, useContext, useCallback } from 'react';
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity, FlatList, Image } from 'react-native';
 import { AuthContext } from '../../../context/authContext';
 import url from '../../../context/url';
-import MoodAnalysisDoctor from './MoodAnalysisDoctor';
 import Bottom from '../../Bottom';
 import LinearGradient from 'react-native-linear-gradient';
+import TopBlock from './Components/TopBlock';
+import Heading from '../../../ui/Headings';
+import { Colors } from '../../../ui/Colors';
 
-const DoctorHome = () => {
+const DoctorHome = ({ navigation }) => {
+  const selectPatientImg = require('../../../img/activity/Select-cuate.png');
   const [state] = useContext(AuthContext);
   const { user } = state;
   const [userDetails, setUserDetails] = useState([]);
-  const [selectedUser, setSelectedUser] = useState(null);
-  const [selectedUserId, setSelectedUserId] = useState(null);
-  const [weeklyTestReports, setWeeklyTestReports] = useState([]);
-
-  // ... (Keep your existing fetch functions unchanged)
+  const [filteredPatients, setFilteredPatients] = useState([]);
+  const [textData, setTextData] = useState('');
+  const [searchTimeout, setSearchTimeout] = useState(null);
 
   const getUserDetails = async () => {
     try {
@@ -22,119 +23,100 @@ const DoctorHome = () => {
         method: "GET"
       });
       details = await details.json();
-      console.log(`details: ${JSON.stringify(details, null, 2)}`);
       setUserDetails(details);
-      console.log(`user details: ${JSON.stringify(details)}`);
+      setFilteredPatients(details);
     } catch (error) {
       console.log(`error: ${error}`);
     }
-  }
-
-  const getUserTestReports = async () => {
-    try {
-      let testReports = await fetch(`${url}/api/v1/auth/doctor/getTestReport/${selectedUserId}`, {
-        method: "GET"
-      });
-      testReports = await testReports.json();
-      setWeeklyTestReports(testReports);
-      console.log(`test details: ${JSON.stringify(testReports)}`);
-    } catch (error) {
-      console.log(`error: ${error}`);
-    }
-  }
+  };
 
   useEffect(() => {
     getUserDetails();
+    return () => {
+      setUserDetails(null);
+      setFilteredPatients(null);
+    };
   }, [state]);
 
-  useEffect(() => {
-    if (selectedUserId) {
-      getUserTestReports();
+  const searchUser = useCallback(() => {
+    if (textData.trim() === '') {
+      setFilteredPatients(userDetails);
+      return;
     }
-  }, [selectedUserId]);
+    const filtered = userDetails.filter(patient =>
+      patient.name.toLowerCase().includes(textData.toLowerCase()) ||
+      patient._id.toLowerCase().includes(textData.toLowerCase())
+    );
+    setFilteredPatients(filtered);
+  }, [textData, userDetails]);
 
-  const renderPatientItem = ({ item, index }) => (
+  const handleTextChange = (text) => {
+    setTextData(text);
+    if (searchTimeout) {
+      clearTimeout(searchTimeout);
+    }
+    setSearchTimeout(setTimeout(() => {
+      searchUser();
+    }, 500));
+  };
+
+  const renderPatientItem = ({ item }) => (
     <TouchableOpacity
-      onPress={() => {
-        setSelectedUser(index);
-        setSelectedUserId(item._id);
-      }}
-      style={[
-        styles.patientItem,
-        selectedUser === index && styles.selectedPatientItem
-      ]}
+      onPress={() => navigation.navigate('PatientDetails', { patient: item })}
+      style={styles.patientItemContainer}
     >
-      <Text style={styles.patientId}>{item._id.substring(0, 8)}...</Text>
-      <Text style={styles.patientName}>{item.name}</Text>
+      <Image
+        src={`https://avatar.iran.liara.run/username?username=${item.name}`}
+        resizeMode='contain'
+        style={styles.patientAvatar}
+      />
+      <View style={styles.patientInfo}>
+        <Text style={styles.patientName}>{item.name}</Text>
+        <Text style={styles.patientId}>...{item?._id.slice(-15)}</Text>
+      </View>
     </TouchableOpacity>
-  );
-
-  const renderTestReportItem = ({ item }) => (
-    <View style={styles.reportItem}>
-      <Text style={styles.reportDate}>
-        {new Date(item.createdAt).toLocaleDateString()}
-      </Text>
-      <Text style={styles.reportScore}>{item.score}</Text>
-    </View>
   );
 
   return (
     <LinearGradient
-      colors={['#f0f4f8', '#ffffff']}
+      colors={[Colors.background.secondary, Colors.background.primary]}
       style={styles.gradientContainer}
     >
-      <ScrollView style={styles.container}>
-        <View style={styles.header}>
-          <Text style={styles.title}>Doctor's Dashboard</Text>
-          <Text style={styles.subtitle}>Welcome, Dr. {user.name}</Text>
-        </View>
+      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+        <TopBlock
+          user={user}
+          textData={textData}
+          setTextData={handleTextChange}
+          searchUser={searchUser}
+        />
 
-        <View style={styles.card}>
-          <Text style={styles.sectionTitle}>Select Patient</Text>
-          {
-            userDetails.length > 0 &&
-            userDetails.map((item, index) => (
-              <View key={index} style={styles.listHeader}>
-                <Text style={styles.headerText}>Date</Text>
-                <Text style={styles.headerText}>Score</Text>
-              </View>))
-          }
-          <FlatList
-            data={userDetails}
-            renderItem={renderPatientItem}
-            keyExtractor={(item) => item._id}
-            style={styles.patientList}
-            scrollEnabled
-            ListHeaderComponent={
-              <View style={styles.listHeader}>
-                <Text style={styles.headerText}>ID</Text>
-                <Text style={styles.headerText}>Name</Text>
-              </View>
-            }
+        <View style={styles.listContainer}>
+          <Image
+            source={selectPatientImg}
+            style={styles.backgroundImage}
+            resizeMode="contain"
           />
-        </View>
-
-        {selectedUserId && (
-          <View style={styles.card}>
-            <Text style={styles.sectionTitle}>Beck's Test Results</Text>
+          <View style={styles.listContent}>
+            <Heading title={"Patient's List"} buttonTitle={'Refresh'} onPress={getUserDetails} />
+            <View style={styles.listHeaderContainer}>
+              <View style={styles.listHeader}>
+                <Text style={styles.headerText}>Patient Information</Text>
+              </View>
+            </View>
             <FlatList
-              data={weeklyTestReports}
-              renderItem={renderTestReportItem}
-              keyExtractor={(item, index) => index.toString()}
-              ListHeaderComponent={
-                <View style={styles.listHeader}>
-                  <Text style={styles.headerText}>Date</Text>
-                  <Text style={styles.headerText}>Score</Text>
-                </View>
-              }
+              data={filteredPatients}
+              renderItem={renderPatientItem}
+              keyExtractor={(item) => item._id}
+              style={styles.patientList}
+              scrollEnabled
+              ItemSeparatorComponent={() => <View style={styles.separator} />}
               ListEmptyComponent={
-                <Text style={styles.emptyText}>No test reports available</Text>
+                <Text style={styles.emptyText}>No patients found</Text>
               }
             />
           </View>
-        )}
-
-        <MoodAnalysisDoctor userID={selectedUserId} />
+        </View>
+        <View style={styles.spacer} />
       </ScrollView>
       <Bottom />
     </LinearGradient>
@@ -143,116 +125,101 @@ const DoctorHome = () => {
 
 const styles = StyleSheet.create({
   gradientContainer: {
-    flex: 1,
+    height: '100%',
   },
   container: {
+    height: '100%',
+  },
+  listContainer: {
     flex: 1,
-    padding: 16,
+    marginHorizontal: 10,
+    marginTop: 20,
+    borderRadius: 20,
+    backgroundColor: Colors.background.primary,
+    elevation: 3,
+    position: 'relative',
+    minHeight: 600, // Adjust this value based on your needs
   },
-  header: {
-    marginBottom: 24,
-    paddingTop: 16,
+  backgroundImage: {
+    position: 'absolute',
+    marginTop: 100,
+    width: '80%',
+    height: 400,
+    objectFit: 'contain',
+    opacity: 0.6,
+    alignSelf: 'center'
   },
-  title: {
-    fontSize: 28,
-    fontFamily: 'Poppins-Bold',
-    color: '#2c3e50',
-    fontWeight: '700',
+  listContent: {
+    flex: 1,
+    padding: 20,
   },
-  subtitle: {
-    fontSize: 16,
-    fontFamily: 'Poppins-Regular',
-    color: '#7f8c8d',
-  },
-  card: {
-    backgroundColor: '#ffffff',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontFamily: 'Poppins-SemiBold',
-    color: '#34495e',
+  listHeaderContainer: {
     marginBottom: 12,
-  },
-  patientList: {
-    maxHeight: 200,
   },
   listHeader: {
     flexDirection: 'row',
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    backgroundColor: '#3498db',
+    justifyContent: 'space-between',
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    backgroundColor: Colors.background.accent,
     borderRadius: 8,
-    marginBottom: 8,
   },
   headerText: {
-    flex: 1,
     fontSize: 14,
     fontFamily: 'Poppins-Medium',
-    color: '#ffffff',
+    color: Colors.text.light,
     textAlign: 'center',
   },
-  patientItem: {
-    flexDirection: 'row',
-    padding: 12,
-    borderRadius: 8,
-    backgroundColor: '#f8f9fa',
-    marginBottom: 8,
-    alignItems: 'center',
-  },
-  selectedPatientItem: {
-    backgroundColor: '#e8f4f8',
-    borderWidth: 1,
-    borderColor: '#3498db',
-  },
-  patientId: {
+  patientList: {
     flex: 1,
-    fontSize: 14,
-    fontFamily: 'Poppins-Regular',
-    color: '#2c3e50',
+  },
+  patientItemContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 10,
+    gap: 10,
+    borderRadius: 12,
+    backgroundColor: Colors.background.tertiary,
+  },
+  patientAvatar: {
+    width: 60,
+    aspectRatio: 1,
+    borderRadius: 50,
+    shadowColor: Colors.text.dark,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  patientInfo: {
+    flex: 1,
+    justifyContent: 'center',
   },
   patientName: {
-    flex: 1,
-    fontSize: 14,
-    fontFamily: 'Poppins-Regular',
-    color: '#2c3e50',
-    textAlign: 'center',
+    fontSize: 16,
+    fontFamily: 'Poppins-Medium',
+    color: Colors.text.primary,
+    marginBottom: 2,
   },
-  reportItem: {
-    flexDirection: 'row',
-    padding: 12,
-    borderRadius: 8,
-    backgroundColor: '#f8f9fa',
-    marginBottom: 8,
-  },
-  reportDate: {
-    flex: 1,
-    fontSize: 14,
+  patientId: {
+    fontSize: 11,
     fontFamily: 'Poppins-Regular',
-    color: '#2c3e50',
-    textAlign: 'center',
-  },
-  reportScore: {
-    flex: 1,
-    fontSize: 14,
-    fontFamily: 'Poppins-Regular',
-    color: '#2c3e50',
-    textAlign: 'center',
+    color: Colors.text.secondary,
   },
   emptyText: {
     fontSize: 14,
     fontFamily: 'Poppins-Regular',
-    color: '#7f8c8d',
+    color: Colors.text.secondary,
     textAlign: 'center',
     padding: 20,
   },
+  separator: {
+    height: 8,
+  },
+  spacer: {
+    height: 80,
+  }
 });
 
 export default DoctorHome;

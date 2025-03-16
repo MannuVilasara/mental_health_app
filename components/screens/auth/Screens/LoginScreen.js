@@ -87,6 +87,8 @@ export default function LoginScreen({ navigation }) {
         } else {
           // Login failed, show error message from server
           response.json().then(data => {
+            console.log(data.message);
+
             Alert.alert('Login failed', data.message);
           });
         }

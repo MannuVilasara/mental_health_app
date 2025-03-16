@@ -1,9 +1,9 @@
 import React from 'react';
-import {createStackNavigator, TransitionPresets} from '@react-navigation/stack';
+import { createStackNavigator, TransitionPresets } from '@react-navigation/stack';
 import Login from '../auth/Login';
 import Register from '../auth/Register';
 
-const Stack = createStackNavigator(); 
+const Stack = createStackNavigator();
 
 const authNavigation = () => {
   return (
@@ -13,12 +13,12 @@ const authNavigation = () => {
         gestureEnabled: true,
         // ...TransitionPresets.SlideFromRightIOS, // This will make the transition from right to left
       }}>
-      <Stack.Screen
+      {/* <Stack.Screen
         name="Login"
         options={{headerShown: false}}
         component={Login}
       />
-      <Stack.Screen name="Register" component={Register} />
+      <Stack.Screen name="Register" component={Register} /> */}
     </Stack.Navigator>
   )
 }

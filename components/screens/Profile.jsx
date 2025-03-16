@@ -52,9 +52,9 @@ export default function Profile({ navigation }) {
       ? [
         { icon: "ondemand-video", name: "D-CBT", nav: "D-CBT", lib: Icon3 },
         { icon: "analytics", name: "Weekly Reports", nav: "Weekly Reports", lib: Icon1 },
+        { icon: "circle-info", name: "About", nav: "About", lib: Icon },
       ]
       : []),
-    { icon: "circle-info", name: "About", nav: "About", lib: Icon },
     { icon: "logout", name: "Log Out", action: handleLogout, lib: Icon2 },
   ]
 
@@ -67,6 +67,7 @@ export default function Profile({ navigation }) {
     ]
     return gradients[index % gradients.length]
   }
+
 
   return (
     <View style={styles.container}>
@@ -185,7 +186,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 10 },
     shadowOpacity: 0.1,
     shadowRadius: 15,
-    elevation: 10,
+    // elevation: 10,
   },
   header: {
     alignItems: "center",
