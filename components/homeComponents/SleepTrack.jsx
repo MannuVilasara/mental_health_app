@@ -389,7 +389,7 @@ const styles = StyleSheet.create({
   },
   statItem: {
     alignItems: 'center',
-    flex: 1,
+    width: 'min-content',
   },
   statValue: {
     color: Colors.primary,

@@ -5,7 +5,7 @@ import Bottom from '../../Bottom';
 import { AuthContext } from '../../../context/authContext';
 import url from '../../../context/url';
 
-const SleepAnalysis = () => {
+const SleepAnalysis = ({ patientId }) => {
   //global
   const [state] = useContext(AuthContext);
   const { token } = state;
@@ -18,7 +18,13 @@ const SleepAnalysis = () => {
   const getData = async () => {
     setIsLoading(true);
     try {
-      let result = await fetch(`${url}/api/v1/sleep/get`, {
+      let endpoint = `${url}/api/v1/sleep/get`;
+      if (patientId) {
+        endpoint += `?patientId=${patientId}`;
+      }
+
+      let result = await fetch(endpoint, {
+        // let result = await fetch(`${url}/api/v1/sleep/get`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -26,7 +32,6 @@ const SleepAnalysis = () => {
       result = await result.json();
       if (result) {
         setSleepData(result?.sleep);
-        // console.log(`Data: ${JSON.stringify(result)}`);
       } else {
         setSleepData([]);
       }
@@ -40,7 +45,7 @@ const SleepAnalysis = () => {
 
   useEffect(() => {
     getData();
-  }, []);
+  }, [patientId, token]);
 
   // Filter out data based on unique dates
   const filteredData = sleepData

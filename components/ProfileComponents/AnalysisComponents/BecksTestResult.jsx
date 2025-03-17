@@ -3,34 +3,40 @@ import React, { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../../../context/authContext';
 import url from '../../../context/url';
 import { Colors } from '../../../ui/Colors';
-import { Animated } from 'react-native';
 
-const BecksTestResult = () => {
+const BecksTestResult = ({ patientId }) => {
   // Global
   const [state] = useContext(AuthContext);
   const { token } = state;
 
   const [becksTestData, setBecksTestData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const fadeAnim = React.useRef(new Animated.Value(0)).current;
+  // const fadeAnim = React.useRef(new Animated.Value(0)).current;
 
   const getData = async () => {
     setIsLoading(true);
     try {
-      let result = await fetch(`${url}/api/v1/weeklyTest/get`, {
+      let endpoint = `${url}/api/v1/weeklyTest/get`;
+      if (patientId) {
+        endpoint += `?patientId=${patientId}`;
+      }
+
+      let result = await fetch(endpoint, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
       result = await result.json();
+      console.log('Back test :-' + JSON.stringify(result, null, 2));
       if (result && result.test && result.test.length > 0) {
+
         // Sort the test data by createdAt date in descending order
         result.test.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
         // Get the latest test data
         const latestTestData = result.test[0];
 
-        // Set the latest test data in state
+        // Set the latest test data in state  
         setBecksTestData([latestTestData]);
       } else {
         setBecksTestData([]);
@@ -50,7 +56,7 @@ const BecksTestResult = () => {
 
   useEffect(() => {
     getData();
-  }, []);
+  }, [patientId, token]);
 
   // Function to determine severity level based on score
   const getSeverityLevel = (score) => {
@@ -71,7 +77,7 @@ const BecksTestResult = () => {
   };
 
   return (
-    <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
+    <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerText}>Beck's Depression Inventory</Text>
         <Text style={styles.subHeaderText}>Latest assessment results</Text>
@@ -134,7 +140,7 @@ const BecksTestResult = () => {
           <Text style={styles.noDataSubText}>Complete a Beck's Depression Inventory assessment to see your results here.</Text>
         </View>
       )}
-    </Animated.View>
+    </View>
   );
 };
 

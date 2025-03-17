@@ -11,6 +11,8 @@ import SecondSignup from '../auth/Screens/SecondSignup';
 import AppNavigation from './AppNavigation';
 import DoctorNavigation from './DoctorNavigation';
 import ChatBot from '../../chatBot/ChatBot';
+import PatientDetailsScreen from '../doctorPages/PatientDetailsScreen';
+import { Colors } from '../../../ui/Colors';
 
 const Stack = createStackNavigator();
 
@@ -36,6 +38,15 @@ const RootNavigation = () => {
             component={MainApp}
             options={{ headerShown: false }}
           />
+          <Stack.Screen name="PatientDetails" component={PatientDetailsScreen} options={
+            {
+              headerTitle: 'Patient Details', headerStyle: {
+                backgroundColor: Colors.background.accent,
+              },
+            }
+          } />
+
+
           <Stack.Screen
             name="chatWithAI"
             component={ChatBot}
