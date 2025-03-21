@@ -210,7 +210,7 @@ const FaceDetectResult = ({ patientId }) => {
 
           <View style={styles.summaryContainer}>
             <Text style={styles.summaryText}>
-              Based on {result.length} facial expression {result.length === 1 ? 'analysis' : 'analyses'} from recent interactions.
+              Based on {result.length} sentimental {result.length === 1 ? 'analysis' : 'analyses'} from recent interactions.
             </Text>
           </View>
         </>

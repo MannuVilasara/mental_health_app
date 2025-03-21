@@ -69,7 +69,7 @@ const RootNavigation = () => {
                       color: 'black',
                     }}
                   >
-                    AI Assistant
+                    AI Assistant (Beta)
                   </Text>
                   <MaterialIcons name="assistant" size={25} color="black" />
                 </View>

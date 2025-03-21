@@ -91,11 +91,11 @@ const DoctorHome = ({ navigation }) => {
         />
 
         <View style={styles.listContainer}>
-          <Image
+          {/* <Image
             source={selectPatientImg}
             style={styles.backgroundImage}
             resizeMode="contain"
-          />
+          /> */}
           <View style={styles.listContent}>
             <Heading title={"Patient's List"} buttonTitle={'Refresh'} onPress={getUserDetails} />
             <View style={styles.listHeaderContainer}>

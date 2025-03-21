@@ -114,18 +114,18 @@ const Vision = () => {
           isActive={true}
           video={true}
         />
-        {/* <View style={{backgroundColor:'black', margin:5, border:'2px solid black', borderRadius:10}}>
-          <Text style={{padding:9}}>AI features like sentimental analysis are currently not availbale in production app. Contact development team for more details. </Text>
-        </View> */}
+        <View style={{backgroundColor:'black', margin:5, border:'2px solid black', borderRadius:10}}>
+          <Text style={{padding:9}}>AI features like facial sentimental analysis are currently not availbale. Contact development team for more details. </Text>
+        </View>
       </View>
       <View style={styles.buttonContainer}>
-      <TouchableOpacity onPress={recordVideo}>
+      <TouchableOpacity disabled onPress={recordVideo}>
         <Text
           style={styles.button}>
           record
         </Text>
       </TouchableOpacity>
-      <TouchableOpacity onPress={stopRecording}>
+      <TouchableOpacity disabled onPress={stopRecording}>
         <Text
           style={styles.button}>
           stop

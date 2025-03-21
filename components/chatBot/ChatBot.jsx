@@ -62,7 +62,7 @@ export default function ChatBot() {
   }, []);
 
   useEffect(() => {
-    const ws = new WebSocket('ws://192.168.86.191:5000');
+    const ws = new WebSocket('ws://perfect-gabbey-bhaichara-19a32374.koyeb.app');
     ws.onopen = () => {
       setSocket(ws);
       setIsLoading(false);
